@@ -2,6 +2,7 @@ package com.proxiad.merelles.protocol;
 
 import com.proxiad.merelles.game.Board;
 import com.proxiad.merelles.game.Command;
+import com.proxiad.merelles.game.Location;
 import com.proxiad.merelles.game.UnknownPieceException;
 
 public class Parser {
@@ -14,7 +15,10 @@ public class Parser {
 		String[] tokens = commandText.split(" ");
 		try {
 			int pieceId = Integer.parseInt(tokens[0]);
-			return new Command(board.findPieceById(pieceId));
+			int direction = Integer.parseInt(tokens[1]);
+			int radius = Integer.parseInt(tokens[2]);
+			Location targetLocation = new Location(direction, radius);
+			return new Command(board.findPieceById(pieceId), targetLocation);
 		} catch(NumberFormatException | UnknownPieceException exc) {
 			throw new ParsingException();
 		}

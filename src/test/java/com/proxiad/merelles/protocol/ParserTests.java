@@ -49,6 +49,16 @@ public class ParserTests {
 	}
 
 	@Test
+	public void testOtherTargetLocation() throws ParsingException, UnknownPieceException{
+		String textFromPlayer = "1 7 1 0 Foobar";
+		Parser parser = new Parser();
+		when(board.findPieceById(1)).thenReturn(new Piece(1));
+		Command command = parser.parse(textFromPlayer, board);
+		Location expectedLocation = new Location(7, 1);
+		assertEquals(expectedLocation, command.getTargetLocation());
+	}
+
+	@Test
 	public void testMovePiece2() throws ParsingException, UnknownPieceException {
 		// MOVE_PIECE_ID TO_A TO_R REMOVE_PIECE_ID TEXT
 		String textFromPlayer = "2 3 2 0 Foobar";

@@ -5,8 +5,12 @@ public class Command {
 	// The piece to be moved
 	private Piece piece;
 
-	public Command(Piece piece) {
+	// Where the piece should be moved
+	private Location targetLocation;
+	
+	public Command(Piece piece, Location targetLocation) {
 		this.piece = piece;
+		this.targetLocation = targetLocation;
 	}
 	
 	/**
@@ -18,6 +22,6 @@ public class Command {
 	}
 
 	public Location getTargetLocation() {
-		return new Location(3,2);
+		return targetLocation;
 	}
 }
