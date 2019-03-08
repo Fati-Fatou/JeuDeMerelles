@@ -2,23 +2,22 @@ package com.proxiad.merelles.game;
 
 public class Command {
 
-	// ID of the piece to be moved
-	private int pieceId;
+	// The piece to be moved
+	private Piece piece;
 
-	public Command(int pieceId) {
-		this.pieceId = pieceId;
+	public Command(Piece piece) {
+		this.piece = piece;
 	}
 	
 	/**
-	 * ID of the piece to be moved
-	 * @return ID of a piece
+	 * The piece to be moved
+	 * @return A piece. Not null.
 	 */
-	public int getPieceId() {
-		return pieceId;
+	public Piece getMovedPiece() {
+		return piece;
 	}
 
 	public Location getTargetLocation() {
-		// TODO Auto-generated method stub
 		return new Location(3,2);
 	}
 }
