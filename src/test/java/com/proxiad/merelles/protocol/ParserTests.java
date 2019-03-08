@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.proxiad.merelles.game.Command;
+import com.proxiad.merelles.game.Location;
 
 public class ParserTests {
 
@@ -24,6 +25,15 @@ public class ParserTests {
 		Parser parser = new Parser();
 		Command command = parser.parse(textFromPlayer);
 		assertEquals(1, command.getPieceId());
+	}
+	
+	@Test
+	public void testTargetLocation() throws ParsingException{
+		String textFromPlayer = "1 3 2 0 Foobar";
+		Parser parser = new Parser();
+		Command command = parser.parse(textFromPlayer);
+		Location expectedLocation = new Location(3, 2);
+		assertEquals(expectedLocation, command.getTargetLocation());
 	}
 
 	@Test

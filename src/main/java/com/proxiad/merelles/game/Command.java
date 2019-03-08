@@ -3,7 +3,7 @@ package com.proxiad.merelles.game;
 public class Command {
 
 	// ID of the piece to be moved
-	int pieceId;
+	private int pieceId;
 
 	public Command(int pieceId) {
 		this.pieceId = pieceId;
@@ -15,5 +15,10 @@ public class Command {
 	 */
 	public int getPieceId() {
 		return pieceId;
+	}
+
+	public Location getTargetLocation() {
+		// TODO Auto-generated method stub
+		return new Location(3,2);
 	}
 }
