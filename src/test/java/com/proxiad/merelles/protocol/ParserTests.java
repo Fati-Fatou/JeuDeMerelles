@@ -2,17 +2,18 @@ package com.proxiad.merelles.protocol;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
+import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import static org.mockito.Mockito.when;
 
 import com.proxiad.merelles.game.Board;
 import com.proxiad.merelles.game.Command;
 import com.proxiad.merelles.game.Location;
 import com.proxiad.merelles.game.Piece;
+import com.proxiad.merelles.game.PlayerColor;
 import com.proxiad.merelles.game.UnknownPieceException;
 
 public class ParserTests {
@@ -33,7 +34,8 @@ public class ParserTests {
 		// MOVE_PIECE_ID TO_A TO_R REMOVE_PIECE_ID TEXT
 		String textFromPlayer = "1 3 2 0 Foobar";
 		Parser parser = new Parser();
-		when(board.findPieceById(1)).thenReturn(new Piece(1));
+		Location previousLocation = new Location(2, 2);
+		when(board.findPieceById(1)).thenReturn(new Piece(1, PlayerColor.BLACK, previousLocation));
 		Command command = parser.parse(textFromPlayer, board);
 		assertEquals(1, command.getMovedPiece().getId());
 	}
@@ -42,7 +44,8 @@ public class ParserTests {
 	public void testTargetLocation() throws ParsingException, UnknownPieceException{
 		String textFromPlayer = "1 3 2 0 Foobar";
 		Parser parser = new Parser();
-		when(board.findPieceById(1)).thenReturn(new Piece(1));
+		Location previousLocation = new Location(2, 2);
+		when(board.findPieceById(1)).thenReturn(new Piece(1, PlayerColor.BLACK, previousLocation));
 		Command command = parser.parse(textFromPlayer, board);
 		Location expectedLocation = new Location(3, 2);
 		assertEquals(expectedLocation, command.getTargetLocation());
@@ -50,9 +53,10 @@ public class ParserTests {
 
 	@Test
 	public void testOtherTargetLocation() throws ParsingException, UnknownPieceException{
-		String textFromPlayer = "1 7 1 0 Foobar";
+		String textFromPlayer = "1 7 1 0 ; Foobar";
 		Parser parser = new Parser();
-		when(board.findPieceById(1)).thenReturn(new Piece(1));
+		Location previousLocation = new Location(7, 0);
+		when(board.findPieceById(1)).thenReturn(new Piece(1, PlayerColor.BLACK, previousLocation));
 		Command command = parser.parse(textFromPlayer, board);
 		Location expectedLocation = new Location(7, 1);
 		assertEquals(expectedLocation, command.getTargetLocation());
@@ -61,9 +65,9 @@ public class ParserTests {
 	@Test
 	public void testMovePiece2() throws ParsingException, UnknownPieceException {
 		// MOVE_PIECE_ID TO_A TO_R REMOVE_PIECE_ID TEXT
-		String textFromPlayer = "2 3 2 0 Foobar";
+		String textFromPlayer = "2 3 2 0 ; Foobar";
 		Parser parser = new Parser();
-		when(board.findPieceById(2)).thenReturn(new Piece(2));
+		when(board.findPieceById(2)).thenReturn(new Piece(2, PlayerColor.BLACK, new Location(3, 2)));
 		Command command = parser.parse(textFromPlayer, board);
 		assertEquals(2, command.getMovedPiece().getId());
 	}
