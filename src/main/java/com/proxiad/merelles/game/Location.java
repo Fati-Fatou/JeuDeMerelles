@@ -10,6 +10,14 @@ public class Location {
 		this.radius = radius;
 	}
 
+	public int getDirection() {
+		return direction;
+	}
+
+	public int getRadius() {
+		return radius;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
