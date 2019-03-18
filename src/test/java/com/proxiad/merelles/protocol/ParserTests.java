@@ -32,7 +32,7 @@ public class ParserTests {
 	@Test
 	public void testMovePiece1() throws ParsingException, UnknownPieceException {
 		// MOVE_PIECE_ID TO_A TO_R REMOVE_PIECE_ID TEXT
-		String textFromPlayer = "1 3 2 0 Foobar";
+		String textFromPlayer = "1 3 2 0 ; Foobar";
 		Parser parser = new Parser();
 		Location previousLocation = new Location(2, 2);
 		when(board.findPieceById(1)).thenReturn(new Piece(1, PlayerColor.BLACK, previousLocation));
@@ -42,7 +42,7 @@ public class ParserTests {
 	
 	@Test
 	public void testTargetLocation() throws ParsingException, UnknownPieceException{
-		String textFromPlayer = "1 3 2 0 Foobar";
+		String textFromPlayer = "1 3 2 0 ; Foobar";
 		Parser parser = new Parser();
 		Location previousLocation = new Location(2, 2);
 		when(board.findPieceById(1)).thenReturn(new Piece(1, PlayerColor.BLACK, previousLocation));

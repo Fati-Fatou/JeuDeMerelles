@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import com.proxiad.merelles.game.Board;
 import com.proxiad.merelles.game.Location;
 import com.proxiad.merelles.game.PlayerColor;
+import com.proxiad.merelles.game.UnknownPieceException;
 import com.proxiad.merelles.view.ViewController;
 
 public class Referee extends AbstractReferee {
@@ -50,7 +51,20 @@ public class Referee extends AbstractReferee {
 			int radius = turn % 3;
 			int direction = turn / 3;
 			Location location = new Location(direction, radius);
-			board.putPiece(location, color);
+			int id = board.putPiece(location, color);
+			try {
+				view.registerPieceView(board.findPieceById(id));
+			} catch (UnknownPieceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else if(turn == 18) {
+			try {
+				board.findPieceById(1).move(new Location(7,0));
+			} catch (UnknownPieceException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 		}
 		view.update();
 	}

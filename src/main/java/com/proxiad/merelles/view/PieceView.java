@@ -24,11 +24,11 @@ public class PieceView implements PieceObserver {
 		}
 
 		int computeX(int radius) {
-			return centerX + radius * dx;
+			return centerX + (radius + 1)* dx;
 		}
 
 		int computeY(int radius) {
-			return centerY + radius * dy;
+			return centerY + (radius +1 ) * dy;
 		}
 	}
 
@@ -82,7 +82,7 @@ public class PieceView implements PieceObserver {
 	public void taken(Piece piece) {
 		wasTaken = true;		
 	}
-	
+
 	public void updateView() {
 		if (sprite == null) {
 			createSprite();
@@ -116,13 +116,14 @@ public class PieceView implements PieceObserver {
 			entityModule.commitEntityState(0, sprite);
 		}
 
-		if (sprite != null) {
-			sprite.setVisible(true);
-			sprite.setAlpha(1.0);
-		}
 		updateCoords(location);
+		if (sprite != null) {
+			sprite.setVisible(true)
+			.setAlpha(1.0)
+			.setX(x)
+			.setY(y);
+		}
 		isVisible = true;
-
 		if (sprite != null) {
 			entityModule.commitEntityState(1.0, sprite);
 		}
@@ -132,7 +133,8 @@ public class PieceView implements PieceObserver {
 		isVisible = false;
 
 		if (sprite != null) {
-			sprite.setAlpha(0.0);
+			sprite.setAlpha(0.0)
+			.setVisible(false);
 			entityModule.commitEntityState(1.0, sprite);
 		}
 	}
