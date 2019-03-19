@@ -10,6 +10,7 @@ import com.proxiad.merelles.game.Board;
 import com.proxiad.merelles.game.Location;
 import com.proxiad.merelles.game.PlayerColor;
 import com.proxiad.merelles.game.UnknownPieceException;
+import com.proxiad.merelles.protocol.InfoGenerator;
 import com.proxiad.merelles.view.ViewController;
 
 public class Referee extends AbstractReferee {
@@ -31,8 +32,9 @@ public class Referee extends AbstractReferee {
 
 	@Override
 	public void gameTurn(int turn) {
+		InfoGenerator generator = new InfoGenerator();
 		for (Player player : gameManager.getActivePlayers()) {
-			player.sendInputLine("input");
+			generator.gameInfoForPlayer(board, player).forEach(player::sendInputLine);
 			player.execute();
 		}
 
