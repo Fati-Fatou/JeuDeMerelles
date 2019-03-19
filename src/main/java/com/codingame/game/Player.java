@@ -6,6 +6,8 @@ import com.proxiad.merelles.game.PlayerColor;
 // public class Player extends AbstractSoloPlayer {
 public class Player extends AbstractMultiplayerPlayer {
 	
+	private PlayerColor color;
+	
     @Override
     public int getExpectedOutputLines() {
         // Returns the number of expected lines of outputs for a player
@@ -13,7 +15,11 @@ public class Player extends AbstractMultiplayerPlayer {
     }
     
     public PlayerColor getColor() {
-    	return getIndex() == 0 ? PlayerColor.BLACK : PlayerColor.WHITE;
+    	return color;
+    }
+    
+    public void setColor(PlayerColor color) {
+    	this.color = color;
     }
     
     public int colorToOwnerId(PlayerColor aColor) {

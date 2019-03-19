@@ -1,10 +1,19 @@
 package com.proxiad.merelles.game;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import com.codingame.game.Player;
+
 public class Board {
+	
+	public interface BoardObserver {
+		void pieceAdded(Piece piece);
+		void pieceTaken(Piece piece);
+	}
 	
 	private int nextId = 1;
 	private Map<Integer, Piece> knownPieces = new HashMap<>();
@@ -15,6 +24,8 @@ public class Board {
 	private int whiteStock = 9;
 	private int blackPieces = 0;
 	private int whitePieces = 0;
+	
+	private List<BoardObserver> observers = new ArrayList<>();
 	
 	/**
 	 * All known pieces.
@@ -42,7 +53,9 @@ public class Board {
 			++whitePieces;
 			--whiteStock;
 		}
-			
+		
+		observers.forEach(observer -> observer.pieceAdded(addedPiece));
+		
 		return addedPiece.getId();
 	}
 
@@ -66,7 +79,14 @@ public class Board {
 		return whitePieces;
 	}
 	
-	public void runCommand(Command command) {
+	public void runCommand(PlayerColor playerColor, Command command) {
 		// TODO
+		if (command.getMovedPiece() == null) {
+			putPiece(command.getTargetLocation(), playerColor);
+		}
+	}
+	
+	public void addListener(BoardObserver observer) {
+		observers.add(observer);
 	}
 }

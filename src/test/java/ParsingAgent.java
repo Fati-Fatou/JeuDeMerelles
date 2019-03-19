@@ -17,7 +17,7 @@ public abstract class ParsingAgent {
 			Pattern.compile("(BLACK|WHITE) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)");
 
 	private static final Pattern piecesParser = 
-			Pattern.compile("([0-9]+) (BLACK|WHITE) ([0-9]+) ([0-9]+)");
+			Pattern.compile("([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)");
 
 	private static final Pattern commandParser = 
 			Pattern.compile("([0-9]+) ([0-9]+) ([0-9]+)");
@@ -55,7 +55,7 @@ public abstract class ParsingAgent {
 			matcher.find();
 
 			int id = Integer.parseInt(matcher.group(1));
-			PlayerColor color = parseColor(matcher.group(2));
+			PlayerColor color = Integer.parseInt(matcher.group(2)) == 0 ? myColor : (myColor == PlayerColor.BLACK ? PlayerColor.WHITE : PlayerColor.BLACK);
 			int direction = Integer.parseInt(matcher.group(3));
 			int radius = Integer.parseInt(matcher.group(4));
 
