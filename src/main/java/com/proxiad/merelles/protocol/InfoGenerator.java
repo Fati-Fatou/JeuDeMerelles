@@ -2,6 +2,7 @@ package com.proxiad.merelles.protocol;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -23,7 +24,7 @@ public class InfoGenerator {
 		// Pieces on the board
 		List<String> piecesInfos =
 				board.pieces()
-				.map(this::toPieceString)
+				.map(toPieceString(player))
 				.collect(Collectors.toList());
 
 		infos.add(Integer.toString(piecesInfos.size()));
@@ -42,16 +43,25 @@ public class InfoGenerator {
 	}
 	
 	public String infoLine(Board board, Player player) {
-		return "SOME INFO";
+		int myPieces = player.getColor() == PlayerColor.BLACK ? board.getBlackPieces() : board.getWhitePieces();
+		int opponentsPieces = player.getColor() == PlayerColor.BLACK ? board.getWhitePieces() : board.getBlackPieces();
+		int myStock = player.getColor() == PlayerColor.BLACK ? board.getBlackStock() : board.getWhiteStock();
+		int opponentsStock = player.getColor() == PlayerColor.BLACK ? board.getWhiteStock() : board.getBlackStock();
+		
+		return String.format("%s %d %d %d %d %d",
+					player.getColor() == PlayerColor.BLACK ? "BLACK" : "WHITE",
+					board.getTurnsLeft(),
+					myPieces, opponentsPieces, myStock, opponentsStock);
 	}
 	
-	public String toPieceString(Piece piece) {
-		return String.format(
-				"%d %s %d %d", 
+	public Function<Piece, String> toPieceString(Player player) {
+		return piece ->
+			String.format(
+				"%d %d %d %d", 
 				piece.getId(),
-				piece.getColor() == PlayerColor.BLACK ? "BLACK" : "WHITE",
+				piece.getColor() == player.getColor() ? 0 : 1,
 				piece.getLocation().getDirection(), 
-				piece .getLocation().getRadius());
+				piece.getLocation().getRadius());
 	}
 
 	public List<Command> suggestedMoves(Board board, Player player) {

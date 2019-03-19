@@ -7,10 +7,10 @@ import com.codingame.gameengine.core.MultiplayerGameManager;
 import com.codingame.gameengine.module.entities.GraphicEntityModule;
 import com.google.inject.Inject;
 import com.proxiad.merelles.game.Board;
-import com.proxiad.merelles.game.Location;
-import com.proxiad.merelles.game.PlayerColor;
-import com.proxiad.merelles.game.UnknownPieceException;
+import com.proxiad.merelles.game.Command;
 import com.proxiad.merelles.protocol.InfoGenerator;
+import com.proxiad.merelles.protocol.Parser;
+import com.proxiad.merelles.protocol.ParsingException;
 import com.proxiad.merelles.view.ViewController;
 
 public class Referee extends AbstractReferee {
@@ -42,13 +42,20 @@ public class Referee extends AbstractReferee {
 			try {
 				List<String> outputs = player.getOutputs();
 				// Check validity of the player output and compute the new game state
+
+				Parser parser = new Parser();
+				Command command = parser.parse(outputs.get(0), board);
+				board.runCommand(command);
 			} catch (TimeoutException e) {
 				player.deactivate(String.format("$%d timeout!", player.getIndex()));
+			} catch (ParsingException e) {
+				e.printStackTrace();
+				player.deactivate(String.format("$%d invalid command!", player.getIndex()));
 			}
 		}        
 		
 		/* Fake implementation, just to have something on the screen */
-		if (turn < 18) {
+		/*if (turn < 18) {
 			PlayerColor color = (turn % 2) == 0 ? PlayerColor.BLACK : PlayerColor.WHITE;
 			int radius = turn % 3;
 			int direction = turn / 3;
@@ -67,7 +74,7 @@ public class Referee extends AbstractReferee {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
+		}*/
 		view.update();
 	}
 }

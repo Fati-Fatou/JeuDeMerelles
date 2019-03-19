@@ -14,8 +14,8 @@ public class Command {
 	}
 	
 	/**
-	 * The piece to be moved
-	 * @return A piece. Not null.
+	 * The piece to be moved. Null for initial placement.
+	 * @return A piece.
 	 */
 	public Piece getMovedPiece() {
 		return piece;

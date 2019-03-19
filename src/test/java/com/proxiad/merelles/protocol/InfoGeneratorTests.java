@@ -53,9 +53,17 @@ public class InfoGeneratorTests {
 		// nb moves = 24 (24 free slots on the board)
 		// one line per slot
 		assertEquals(3 + 24, blackInfos.size());
+
+		assertEquals("WHITE 200 0 0 9 9", blackInfos.get(0));
+		
+		// 0 pieces on the board
+		assertEquals("0", blackInfos.get(1));
+
+		assertEquals("24", blackInfos.get(2));
+		
 		for (int direction = 0; direction < 8; ++direction) {
 			for (int radius = 0; radius < 3; ++radius) {				
-				assertTrue(blackInfos.stream().anyMatch(moveTester(direction, radius)));
+				assertTrue(blackInfos.stream().skip(3).anyMatch(moveTester(direction, radius)));
 			}
 		}
 	}
@@ -80,14 +88,17 @@ public class InfoGeneratorTests {
 		// one line per slot
 		assertEquals(4 + 23, whiteInfos.size());
 
-		// 1 piece on the board
-		assertEquals(whiteInfos.get(1), "1");
-		assertTrue(whiteInfos.get(2).endsWith(" BLACK 2 1"));
+		assertEquals("WHITE 200 0 1 9 8", whiteInfos.get(0));
 		
+		// 1 piece on the board
+		assertEquals("1", whiteInfos.get(1));
+		assertTrue(whiteInfos.get(2).endsWith(" 1 2 1"));
+		
+		assertEquals("23", whiteInfos.get(3));
 		for (int direction = 0; direction < 8; ++direction) {
 			for (int radius = 0; radius < 3; ++radius) {
 				if (direction != 2 || radius != 1) {
-					assertTrue(whiteInfos.stream().anyMatch(moveTester(direction, radius)));
+					assertTrue(whiteInfos.stream().skip(4).anyMatch(moveTester(direction, radius)));
 				}
 			}
 		}

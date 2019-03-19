@@ -1,6 +1,7 @@
 package com.proxiad.merelles.protocol;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
@@ -14,7 +15,6 @@ import com.proxiad.merelles.game.Command;
 import com.proxiad.merelles.game.Location;
 import com.proxiad.merelles.game.Piece;
 import com.proxiad.merelles.game.PlayerColor;
-import com.proxiad.merelles.game.UnknownPieceException;
 
 public class ParserTests {
 
@@ -23,14 +23,14 @@ public class ParserTests {
 
 	@Mock
 	private Board board;
-	
+
 	@Before
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 	}
 
 	@Test
-	public void testMovePiece1() throws ParsingException, UnknownPieceException {
+	public void testMovePiece1() throws ParsingException {
 		// MOVE_PIECE_ID TO_A TO_R REMOVE_PIECE_ID TEXT
 		String textFromPlayer = "1 3 2 0 ; Foobar";
 		Parser parser = new Parser();
@@ -39,9 +39,9 @@ public class ParserTests {
 		Command command = parser.parse(textFromPlayer, board);
 		assertEquals(1, command.getMovedPiece().getId());
 	}
-	
+
 	@Test
-	public void testTargetLocation() throws ParsingException, UnknownPieceException{
+	public void testTargetLocation() throws ParsingException {
 		String textFromPlayer = "1 3 2 0 ; Foobar";
 		Parser parser = new Parser();
 		Location previousLocation = new Location(2, 2);
@@ -52,7 +52,7 @@ public class ParserTests {
 	}
 
 	@Test
-	public void testOtherTargetLocation() throws ParsingException, UnknownPieceException{
+	public void testOtherTargetLocation() throws ParsingException {
 		String textFromPlayer = "1 7 1 0 ; Foobar";
 		Parser parser = new Parser();
 		Location previousLocation = new Location(7, 0);
@@ -63,7 +63,7 @@ public class ParserTests {
 	}
 
 	@Test
-	public void testMovePiece2() throws ParsingException, UnknownPieceException {
+	public void testMovePiece2() throws ParsingException {
 		// MOVE_PIECE_ID TO_A TO_R REMOVE_PIECE_ID TEXT
 		String textFromPlayer = "2 3 2 0 ; Foobar";
 		Parser parser = new Parser();
@@ -113,21 +113,14 @@ public class ParserTests {
 		}
 		assertEquals(INVALID_INPUT, exception.getMessage());
 	}
-	
+
 	@Test
-	public void testMoveUnknownPiece() throws ParsingException, UnknownPieceException {
+	public void testMoveUnknownPiece() throws ParsingException {
 		// MOVE_PIECE_ID TO_A TO_R REMOVE_PIECE_ID TEXT
 		String textFromPlayer = "25 3 2 0 Foobar";
 		Parser parser = new Parser();
-		when(board.findPieceById(25)).thenThrow(new UnknownPieceException());
-		ParsingException exception = null;
-		try {
-			parser.parse(textFromPlayer, board);
-			fail(SHOULD_THROW_AN_EXCEPTION);
-		} catch(ParsingException exc) {
-			exception = exc;
-		}
-		assertEquals(INVALID_INPUT, exception.getMessage());
+		when(board.findPieceById(25)).thenReturn(null);
+		Command command = parser.parse(textFromPlayer, board);
+		assertNull(command.getMovedPiece());
 	}
-
 }

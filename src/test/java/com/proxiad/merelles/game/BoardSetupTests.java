@@ -2,6 +2,7 @@ package com.proxiad.merelles.game;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public class BoardSetupTests {
 	}
 
 	@Test
-	public void testAddOnePiece() throws UnknownPieceException {
+	public void testAddOnePiece() {
 		Location locationWhite1 = new Location(1, 2);
 		int newId = board.putPiece(locationWhite1, PlayerColor.WHITE);
 		
@@ -39,16 +40,16 @@ public class BoardSetupTests {
 		assertSame(white1, actualPieces.get(0));
 	}
 
-	@Test(expected = UnknownPieceException.class)
-	public void testFindUnknownPiece() throws UnknownPieceException  {
+	@Test
+	public void testFindUnknownPiece() {
 		Location locationWhite1 = new Location(1, 2);
 		int newId = board.putPiece(locationWhite1, PlayerColor.WHITE);
 		
-		board.findPieceById(newId + 1);		
+		assertNull(board.findPieceById(newId + 1));		
 	}
 
 	@Test
-	public void testAnotherPiece() throws UnknownPieceException {
+	public void testAnotherPiece() {
 		Location locationWhite1 = new Location(1, 2);
 		int white1Id = board.putPiece(locationWhite1, PlayerColor.WHITE);
 		
