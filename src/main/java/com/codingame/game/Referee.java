@@ -7,11 +7,13 @@ import com.codingame.gameengine.core.MultiplayerGameManager;
 import com.codingame.gameengine.module.entities.GraphicEntityModule;
 import com.google.inject.Inject;
 import com.proxiad.merelles.game.Board;
-import com.proxiad.merelles.game.Command;
 import com.proxiad.merelles.game.InvalidCommandException;
+import com.proxiad.merelles.game.MoveCommand;
 import com.proxiad.merelles.game.PlayerColor;
+import com.proxiad.merelles.game.PutCommand;
 import com.proxiad.merelles.protocol.InfoGenerator;
-import com.proxiad.merelles.protocol.Parser;
+import com.proxiad.merelles.protocol.ParserMoveCommand;
+import com.proxiad.merelles.protocol.ParserPutCommand;
 import com.proxiad.merelles.protocol.ParsingException;
 import com.proxiad.merelles.view.ViewController;
 
@@ -56,9 +58,24 @@ public class Referee extends AbstractReferee {
 			List<String> outputs = player.getOutputs();
 			// Check validity of the player output and compute the new game state
 
-			Parser parser = new Parser();
-			Command command = parser.parse(outputs.get(0), board);
-			board.runCommand(player.getColor(), command);
+			boolean isSetupPhase;
+			if (player.getColor() == PlayerColor.BLACK) {
+				isSetupPhase = board.getBlackStock() > 0;
+			}
+			else {
+				isSetupPhase = board.getWhiteStock() > 0;
+			}
+			
+			if (isSetupPhase) {
+				ParserPutCommand parser = new ParserPutCommand();
+				PutCommand command = parser.parseCommand(outputs.get(0), board);
+				board.runPutCommand(player.getColor(), command);
+			}
+			else {
+				ParserMoveCommand parser = new ParserMoveCommand();
+				MoveCommand command = parser.parseCommand(outputs.get(0), board);
+				board.runMoveCommand(player.getColor(), command);
+			}			
 		} catch (TimeoutException e) {
 			player.deactivate(prependNickname("timeout!", player));
 		} catch (ParsingException e) {

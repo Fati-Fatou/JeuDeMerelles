@@ -1,6 +1,6 @@
 import java.util.List;
 
-import com.proxiad.merelles.game.Command;
+import com.proxiad.merelles.game.MoveCommand;
 import com.proxiad.merelles.game.Piece;
 import com.proxiad.merelles.game.PlayerColor;
 
@@ -31,12 +31,12 @@ public class GameDesc {
 	}
 
 	private List<Piece> pieces;
-	private List<Command> suggestedMoves;
+	private List<MoveCommand> suggestedMoves;
 	private int turnsLeft;
 	private PlayerDesc me;
 	private PlayerDesc opponent;
 	
-	public GameDesc(List<Piece> pieces, List<Command> suggestedMoves,
+	public GameDesc(List<Piece> pieces, List<MoveCommand> suggestedMoves,
 			int turnsLeft, PlayerDesc me, PlayerDesc opponent) {
 		this.pieces = pieces;
 		this.suggestedMoves = suggestedMoves;
@@ -49,7 +49,7 @@ public class GameDesc {
 		return pieces;
 	}
 	
-	public List<Command> getSuggestedMoves() {
+	public List<MoveCommand> getSuggestedMoves() {
 		return suggestedMoves;
 	}
 	

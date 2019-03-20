@@ -76,8 +76,20 @@ public class Board {
 	public int getWhitePieces() {
 		return whitePieces;
 	}
+
+	public void runPutCommand(PlayerColor playerColor, PutCommand command) throws InvalidCommandException {
+		Location targetLocation = command.getTargetLocation();
+		if (isLocationFree(targetLocation)) {
+			putPiece(targetLocation, playerColor);
+		}
+		else throw new InvalidCommandException();
+	}
+
+	public boolean isLocationFree(Location location) {
+		return !(pieces().anyMatch(piece -> location.equals(piece.getLocation())));
+	}
 	
-	public void runCommand(PlayerColor playerColor, Command command) throws InvalidCommandException {
+	public void runMoveCommand(PlayerColor playerColor, MoveCommand command) throws InvalidCommandException {
 		// TODO
 		if (command.getMovedPiece() == null) {
 			putPiece(command.getTargetLocation(), playerColor);

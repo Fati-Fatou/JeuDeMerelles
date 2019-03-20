@@ -1,12 +1,7 @@
 package com.proxiad.merelles.game;
 
-import static org.junit.Assert.fail;
-import static org.mockito.Mockito.when;
-
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
 public class SetupPhaseTests {
 
@@ -21,14 +16,21 @@ public class SetupPhaseTests {
 
 	@Test
 	public void testPlacingPieceIsOkDuringSetup() throws InvalidCommandException {
-		Command command = new Command(null, target, null, null);
-		board.runCommand(PlayerColor.BLACK, command);
+		PutCommand command = new PutCommand(target);
+		board.runPutCommand(PlayerColor.BLACK, command);
 		// success
 	}
 
-	private static Command move(int pieceId) {
+	@Test(expected = InvalidCommandException.class)
+	public void testPlacingPieceOnExsitingOneIsKoDuringSetup() throws InvalidCommandException {
+		board.putPiece(target, PlayerColor.BLACK);
+		PutCommand command = new PutCommand(target);
+		board.runPutCommand(PlayerColor.BLACK, command);
+	}
+
+	private static MoveCommand move(int pieceId) {
 		Piece pieceToMove = new Piece(pieceId, PlayerColor.BLACK, target);
-		return new Command(pieceToMove, target, null, null);
+		return new MoveCommand(pieceToMove, target, null, null);
 	}
 	
 	@Test(expected = InvalidCommandException.class)
@@ -36,8 +38,8 @@ public class SetupPhaseTests {
 		int existingPieceId = board.putPiece(target, PlayerColor.BLACK);
 		int newPieceId = existingPieceId;
 
-		Command command = move(newPieceId);
-		board.runCommand(PlayerColor.BLACK, command);
+		MoveCommand command = move(newPieceId);
+		board.runMoveCommand(PlayerColor.BLACK, command);
 	}
 
 	@Test(expected = InvalidCommandException.class)
@@ -45,7 +47,7 @@ public class SetupPhaseTests {
 		int existingPieceId = board.putPiece(target, PlayerColor.WHITE);
 		int newPieceId = existingPieceId;
 
-		Command command = move(newPieceId);
-		board.runCommand(PlayerColor.BLACK, command);
+		MoveCommand command = move(newPieceId);
+		board.runMoveCommand(PlayerColor.BLACK, command);
 	}
 }

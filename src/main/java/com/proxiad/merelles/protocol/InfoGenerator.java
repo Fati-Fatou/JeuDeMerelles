@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 import com.codingame.game.Player;
 import com.proxiad.merelles.game.Board;
-import com.proxiad.merelles.game.Command;
+import com.proxiad.merelles.game.MoveCommand;
 import com.proxiad.merelles.game.Location;
 import com.proxiad.merelles.game.Piece;
 import com.proxiad.merelles.game.PlayerColor;
@@ -64,22 +64,22 @@ public class InfoGenerator {
 				piece.getLocation().getRadius());
 	}
 
-	public List<Command> suggestedMoves(Board board, Player player) {
-		List<Command> commands = new ArrayList<Command>(30);
+	public List<MoveCommand> suggestedMoves(Board board, Player player) {
+		List<MoveCommand> commands = new ArrayList<MoveCommand>(30);
 		
 		// TODO improve perfs
 		for (int direction = 0; direction < 8; ++direction) {
 			for (int radius = 0; radius < 3; ++radius) {
 				Location candidate = new Location(direction, radius);
 				if (board.pieces().allMatch(piece -> !piece.getLocation().equals(candidate))) {
-					commands.add(new Command(new Piece(0, player.getColor(), candidate), candidate, null, null));
+					commands.add(new MoveCommand(new Piece(0, player.getColor(), candidate), candidate, null, null));
 				}
 			}
 		}
 		return commands;
 	}
 	
-	public String toCommandString(Command command) {
+	public String toCommandString(MoveCommand command) {
 		Location location = command.getTargetLocation();
 		// Suggest to move this piece.
 		// No suggestion for the piece to remove in case of mill, hence 0 as last argument.
