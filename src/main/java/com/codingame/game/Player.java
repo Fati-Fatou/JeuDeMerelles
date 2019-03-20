@@ -1,14 +1,28 @@
 package com.codingame.game;
 import com.codingame.gameengine.core.AbstractMultiplayerPlayer;
+import com.proxiad.merelles.game.PlayerColor;
 
 // Uncomment the line below and comment the line under it to create a Solo Game
 // public class Player extends AbstractSoloPlayer {
 public class Player extends AbstractMultiplayerPlayer {
+	
+	private PlayerColor color;
+	
     @Override
     public int getExpectedOutputLines() {
         // Returns the number of expected lines of outputs for a player
-
-        // TODO: Replace the returned value with a valid number. Most of the time the value is 1. 
         return 1;
+    }
+    
+    public PlayerColor getColor() {
+    	return color;
+    }
+    
+    public void setColor(PlayerColor color) {
+    	this.color = color;
+    }
+    
+    public int colorToOwnerId(PlayerColor aColor) {
+    	return getColor() == aColor ? 0 : 1;
     }
 }
