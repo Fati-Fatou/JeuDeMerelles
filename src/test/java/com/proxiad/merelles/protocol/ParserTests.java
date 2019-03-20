@@ -166,4 +166,40 @@ public class ParserTests {
 		Command command = parser.parse(textFromPlayer, board);
 		assertNull(command.getMovedPiece());
 	}
+
+	@Test
+	public void testMovePieceYielding() throws ParsingException {
+		// MOVE_PIECE_ID TO_A TO_R REMOVE_PIECE_ID TEXT
+		String textFromPlayer = "1 3 2 0 ; Foobar";
+		Parser parser = new Parser();
+		Location previousLocation = new Location(2, 2);
+		when(board.findPieceById(1)).thenReturn(new Piece(1, PlayerColor.BLACK, previousLocation));
+		when(board.findPieceById(0)).thenReturn(null);
+		Command command = parser.parse(textFromPlayer, board);
+		assertEquals("Foobar", command.getMessage());
+	}
+
+	@Test
+	public void testMovePieceSilent() throws ParsingException {
+		// MOVE_PIECE_ID TO_A TO_R REMOVE_PIECE_ID TEXT
+		String textFromPlayer = "1 3 2 0 ; ";
+		Parser parser = new Parser();
+		Location previousLocation = new Location(2, 2);
+		when(board.findPieceById(1)).thenReturn(new Piece(1, PlayerColor.BLACK, previousLocation));
+		when(board.findPieceById(0)).thenReturn(null);
+		Command command = parser.parse(textFromPlayer, board);
+		assertEquals("", command.getMessage());
+	}
+
+	@Test
+	public void testMovePieceVoid() throws ParsingException {
+		// MOVE_PIECE_ID TO_A TO_R REMOVE_PIECE_ID TEXT
+		String textFromPlayer = "1 3 2 0";
+		Parser parser = new Parser();
+		Location previousLocation = new Location(2, 2);
+		when(board.findPieceById(1)).thenReturn(new Piece(1, PlayerColor.BLACK, previousLocation));
+		when(board.findPieceById(0)).thenReturn(null);
+		Command command = parser.parse(textFromPlayer, board);
+		assertEquals("", command.getMessage());
+	}
 }

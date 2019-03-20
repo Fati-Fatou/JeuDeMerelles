@@ -72,7 +72,7 @@ public class InfoGenerator {
 			for (int radius = 0; radius < 3; ++radius) {
 				Location candidate = new Location(direction, radius);
 				if (board.pieces().allMatch(piece -> !piece.getLocation().equals(candidate))) {
-					commands.add(new Command(new Piece(0, player.getColor(), candidate), candidate, null));
+					commands.add(new Command(new Piece(0, player.getColor(), candidate), candidate, null, null));
 				}
 			}
 		}

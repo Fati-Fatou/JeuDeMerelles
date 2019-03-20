@@ -12,14 +12,17 @@ public class Parser {
 		if (commandText == null || commandText.length() == 0) {
 			throw new ParsingException(NO_COMMAND);
 		}
-		String[] tokens = commandText.split(" ");
+		String[] messageParts = commandText.split(";");
+		String message = messageParts.length > 1 ? messageParts[1] : null;
+		
+		String[] tokens = messageParts[0].split(" ");
 
 		int pieceId = parseInt(tokens, 0, "PIECE_ID");
 		int direction = parseInt(tokens, 1, "DIRECTION");
 		int radius = parseInt(tokens, 2, "RADIUS");
 		int removePieceId = parseInt(tokens, 3, "REMOVE_PIECE_ID");
 		Location targetLocation = new Location(direction, radius);
-		return new Command(board.findPieceById(pieceId), targetLocation, board.findPieceById(removePieceId));
+		return new Command(board.findPieceById(pieceId), targetLocation, board.findPieceById(removePieceId), message);
 	}
 
 	private static int parseInt(String[] tokens, int tokenIndex, String fieldName) throws ParsingException {

@@ -86,7 +86,7 @@ public abstract class ParsingAgent {
 					.filter(isThisRemovePiece)
 					.findAny()
 					.orElse(null);
-			moves.add(new Command(piece, new Location(direction, radius), removePiece));
+			moves.add(new Command(piece, new Location(direction, radius), removePiece, null));
 		}
 
 		GameDesc.PlayerDesc me = new GameDesc.PlayerDesc(myColor, myPieces, myStock);

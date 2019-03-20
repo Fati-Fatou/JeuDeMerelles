@@ -11,10 +11,14 @@ public class Command {
 	// The piece to be removed, in case of mill
 	private Piece removePiece;
 	
-	public Command(Piece piece, Location targetLocation, Piece removePiece) {
+	// The extra message on the command line
+	private String message;
+	
+	public Command(Piece piece, Location targetLocation, Piece removePiece, String message) {
 		this.piece = piece;
 		this.targetLocation = targetLocation;
 		this.removePiece = removePiece;
+		this.message = message != null ? message.trim() : "";
 	}
 	
 	/**
@@ -39,5 +43,13 @@ public class Command {
 	 */
 	public Piece getRemovePiece() {
 		return removePiece;
+	}
+	
+	/**
+	 * Extra message on the command line. Not null (replaced with empty string)
+	 * @return Message
+	 */
+	public String getMessage() {
+		return message;
 	}
 }
