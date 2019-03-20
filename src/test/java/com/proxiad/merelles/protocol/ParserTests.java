@@ -2,6 +2,7 @@ package com.proxiad.merelles.protocol;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.when;
 
@@ -18,7 +19,8 @@ import com.proxiad.merelles.game.PlayerColor;
 
 public class ParserTests {
 
-	private static final String INVALID_INPUT = "Invalid input";
+	private static final String NO_COMMAND = "No command";
+
 	private static final String SHOULD_THROW_AN_EXCEPTION = "Should throw an exception";
 
 	@Mock
@@ -36,6 +38,7 @@ public class ParserTests {
 		Parser parser = new Parser();
 		Location previousLocation = new Location(2, 2);
 		when(board.findPieceById(1)).thenReturn(new Piece(1, PlayerColor.BLACK, previousLocation));
+		when(board.findPieceById(0)).thenReturn(null);
 		Command command = parser.parse(textFromPlayer, board);
 		assertEquals(1, command.getMovedPiece().getId());
 	}
@@ -46,6 +49,7 @@ public class ParserTests {
 		Parser parser = new Parser();
 		Location previousLocation = new Location(2, 2);
 		when(board.findPieceById(1)).thenReturn(new Piece(1, PlayerColor.BLACK, previousLocation));
+		when(board.findPieceById(0)).thenReturn(null);
 		Command command = parser.parse(textFromPlayer, board);
 		Location expectedLocation = new Location(3, 2);
 		assertEquals(expectedLocation, command.getTargetLocation());
@@ -57,6 +61,7 @@ public class ParserTests {
 		Parser parser = new Parser();
 		Location previousLocation = new Location(7, 0);
 		when(board.findPieceById(1)).thenReturn(new Piece(1, PlayerColor.BLACK, previousLocation));
+		when(board.findPieceById(0)).thenReturn(null);
 		Command command = parser.parse(textFromPlayer, board);
 		Location expectedLocation = new Location(7, 1);
 		assertEquals(expectedLocation, command.getTargetLocation());
@@ -64,10 +69,34 @@ public class ParserTests {
 
 	@Test
 	public void testMovePiece2() throws ParsingException {
-		// MOVE_PIECE_ID TO_A TO_R REMOVE_PIECE_ID TEXT
+		// MOVE_PIECE_ID TO_A TO_R REMOVE_PIECE_ID ; TEXT
 		String textFromPlayer = "2 3 2 0 ; Foobar";
 		Parser parser = new Parser();
 		when(board.findPieceById(2)).thenReturn(new Piece(2, PlayerColor.BLACK, new Location(3, 2)));
+		when(board.findPieceById(0)).thenReturn(null);
+		Command command = parser.parse(textFromPlayer, board);
+		assertEquals(2, command.getMovedPiece().getId());
+	}
+
+	@Test
+	public void testRemovePiece() throws ParsingException {
+		// MOVE_PIECE_ID TO_A TO_R REMOVE_PIECE_ID ; TEXT
+		String textFromPlayer = "2 3 2 1 ; Foobar";
+		Parser parser = new Parser();
+		Piece removePiece = new Piece(2, PlayerColor.BLACK, new Location(3, 1));
+		when(board.findPieceById(2)).thenReturn(new Piece(2, PlayerColor.BLACK, new Location(3, 2)));
+		when(board.findPieceById(1)).thenReturn(removePiece);
+		Command command = parser.parse(textFromPlayer, board);
+		assertSame(removePiece, command.getRemovePiece());
+	}
+
+	@Test
+	public void testNoRemovePiece() throws ParsingException {
+		// MOVE_PIECE_ID TO_A TO_R REMOVE_PIECE_ID ; TEXT
+		String textFromPlayer = "2 3 2 0 ; Foobar";
+		Parser parser = new Parser();
+		when(board.findPieceById(2)).thenReturn(new Piece(2, PlayerColor.BLACK, new Location(3, 2)));
+		when(board.findPieceById(0)).thenReturn(null);
 		Command command = parser.parse(textFromPlayer, board);
 		assertEquals(2, command.getMovedPiece().getId());
 	}
@@ -83,7 +112,7 @@ public class ParserTests {
 		} catch(ParsingException exc) {
 			exception = exc;
 		}
-		assertEquals(INVALID_INPUT, exception.getMessage());
+		assertEquals("Expecting number for PIECE_ID but found 'You'", exception.getMessage());
 	}
 
 	@Test
@@ -97,7 +126,21 @@ public class ParserTests {
 		} catch(ParsingException exc) {
 			exception = exc;
 		}
-		assertEquals(INVALID_INPUT, exception.getMessage());
+		assertEquals(NO_COMMAND, exception.getMessage());
+	}
+
+	@Test
+	public void testPartialCommand() {
+		String textFromPlayer = "2 3 2";
+		Parser parser = new Parser();
+		ParsingException exception = null;
+		try {
+			parser.parse(textFromPlayer, board);
+			fail(SHOULD_THROW_AN_EXCEPTION);
+		} catch(ParsingException exc) {
+			exception = exc;
+		}
+		assertEquals("Expecting REMOVE_PIECE_ID but found end of line", exception.getMessage());
 	}
 
 	@Test
@@ -111,7 +154,7 @@ public class ParserTests {
 		} catch(ParsingException exc) {
 			exception = exc;
 		}
-		assertEquals(INVALID_INPUT, exception.getMessage());
+		assertEquals(NO_COMMAND, exception.getMessage());
 	}
 
 	@Test

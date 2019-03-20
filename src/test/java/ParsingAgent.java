@@ -20,7 +20,7 @@ public abstract class ParsingAgent {
 			Pattern.compile("([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)");
 
 	private static final Pattern commandParser = 
-			Pattern.compile("([0-9]+) ([0-9]+) ([0-9]+)");
+			Pattern.compile("([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)");
 
 	private static PlayerColor parseColor(String text) {
 		return "BLACK".equals(text) ? PlayerColor.BLACK : PlayerColor.WHITE;
@@ -73,13 +73,20 @@ public abstract class ParsingAgent {
 			int id = Integer.parseInt(matcher.group(1));
 			int direction = Integer.parseInt(matcher.group(2));
 			int radius = Integer.parseInt(matcher.group(3));
+			int removePieceId = Integer.parseInt(matcher.group(4));
 			Predicate<Piece> isThisPiece = p -> p.getId() == id; 
 			Piece piece =
 					pieces.stream()
 					.filter(isThisPiece)
 					.findAny()
 					.orElse(new Piece(id, myColor, new Location(0, 0)));
-			moves.add(new Command(piece, new Location(direction, radius)));
+			Predicate<Piece> isThisRemovePiece = p -> p.getId() == removePieceId; 
+			Piece removePiece =
+					pieces.stream()
+					.filter(isThisRemovePiece)
+					.findAny()
+					.orElse(null);
+			moves.add(new Command(piece, new Location(direction, radius), removePiece));
 		}
 
 		GameDesc.PlayerDesc me = new GameDesc.PlayerDesc(myColor, myPieces, myStock);
@@ -95,7 +102,7 @@ public abstract class ParsingAgent {
 	protected void sendCommand(Command command, PrintStream out) {
 		Location location = command.getTargetLocation();
 		String output = String.format(
-				"%d %d %d", 
+				"%d %d %d 0", 
 				command.getMovedPiece().getId(), 
 				location.getDirection(), 
 				location.getRadius());

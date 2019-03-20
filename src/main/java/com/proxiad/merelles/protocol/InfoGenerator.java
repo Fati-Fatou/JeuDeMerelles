@@ -72,7 +72,7 @@ public class InfoGenerator {
 			for (int radius = 0; radius < 3; ++radius) {
 				Location candidate = new Location(direction, radius);
 				if (board.pieces().allMatch(piece -> !piece.getLocation().equals(candidate))) {
-					commands.add(new Command(new Piece(0, player.getColor(), candidate), candidate));
+					commands.add(new Command(new Piece(0, player.getColor(), candidate), candidate, null));
 				}
 			}
 		}
@@ -81,8 +81,10 @@ public class InfoGenerator {
 	
 	public String toCommandString(Command command) {
 		Location location = command.getTargetLocation();
+		// Suggest to move this piece.
+		// No suggestion for the piece to remove in case of mill, hence 0 as last argument.
 		return String.format(
-				"%d %d %d", 
+				"%d %d %d 0", 
 				command.getMovedPiece().getId(), 
 				location.getDirection(), 
 				location.getRadius());
