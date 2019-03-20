@@ -82,6 +82,7 @@ public class Board {
 		if (command.getMovedPiece() == null) {
 			putPiece(command.getTargetLocation(), playerColor);
 		}
+		else throw new InvalidCommandException();
 	}
 	
 	public void addListener(BoardObserver observer) {
