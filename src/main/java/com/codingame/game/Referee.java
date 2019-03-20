@@ -8,6 +8,7 @@ import com.codingame.gameengine.module.entities.GraphicEntityModule;
 import com.google.inject.Inject;
 import com.proxiad.merelles.game.Board;
 import com.proxiad.merelles.game.Command;
+import com.proxiad.merelles.game.InvalidCommandException;
 import com.proxiad.merelles.game.PlayerColor;
 import com.proxiad.merelles.protocol.InfoGenerator;
 import com.proxiad.merelles.protocol.Parser;
@@ -39,31 +40,47 @@ public class Referee extends AbstractReferee {
 
 	@Override
 	public void gameTurn(int turn) {
-		InfoGenerator generator = new InfoGenerator();
-		for (Player player : gameManager.getActivePlayers()) {
-			generator.gameInfoForPlayer(board, player).forEach(player::sendInputLine);
-			player.execute();
-		}
+		Player player = gameManager.getPlayer(turn % gameManager.getPlayerCount());
 
-		for (Player player : gameManager.getActivePlayers()) {
-			if (player.getIndex() % 2 == turn % 2) {
-				System.err.println("Player " + player.getColor() + " at turn " + turn);
-				try {
-					List<String> outputs = player.getOutputs();
-					// Check validity of the player output and compute the new game state
-
-					Parser parser = new Parser();
-					Command command = parser.parse(outputs.get(0), board);
-					board.runCommand(player.getColor(), command);
-				} catch (TimeoutException e) {
-					player.deactivate(String.format("$%d timeout!", player.getIndex()));
-				} catch (ParsingException e) {
-					e.printStackTrace();
-					player.deactivate(String.format("$%d invalid command!", player.getIndex()));
-				}
-			}
-		}        
+		gameTurnForPlayer(turn, player);
 
 		view.update();
+	}
+
+	private void gameTurnForPlayer(int turn, Player player) {
+		InfoGenerator generator = new InfoGenerator();
+		generator.gameInfoForPlayer(board, player).forEach(player::sendInputLine);
+		player.execute();
+
+		try {
+			List<String> outputs = player.getOutputs();
+			// Check validity of the player output and compute the new game state
+
+			Parser parser = new Parser();
+			Command command = parser.parse(outputs.get(0), board);
+			board.runCommand(player.getColor(), command);
+		} catch (TimeoutException e) {
+			player.deactivate(prependNickname("timeout!", player));
+		} catch (ParsingException e) {
+			player.deactivate(prependNickname("unrecognized command!", player));
+			e.printStackTrace();
+		} catch (InvalidCommandException e) {
+			player.deactivate(prependNickname(e.getMessage(), player));
+		} catch (Exception e) {
+			player.deactivate(prependNickname(e.getMessage(), player));
+			e.printStackTrace();
+		}
+
+		if (board.isGameEnded()) {
+			gameManager.endGame();
+		}
+	}
+	
+	private String prependNickname(String message, Player player) {
+		StringBuilder builder = new StringBuilder();
+		builder.append(player.getNicknameToken());
+		builder.append(' ');
+		builder.append(message);
+		return builder.toString();
 	}
 }

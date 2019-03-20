@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import com.codingame.game.Player;
-
 public class Board {
 	
 	public interface BoardObserver {
@@ -79,7 +77,7 @@ public class Board {
 		return whitePieces;
 	}
 	
-	public void runCommand(PlayerColor playerColor, Command command) {
+	public void runCommand(PlayerColor playerColor, Command command) throws InvalidCommandException {
 		// TODO
 		if (command.getMovedPiece() == null) {
 			putPiece(command.getTargetLocation(), playerColor);
@@ -88,5 +86,10 @@ public class Board {
 	
 	public void addListener(BoardObserver observer) {
 		observers.add(observer);
+	}
+	
+	public boolean isGameEnded() {
+		// TODO
+		return blackStock == 0 && whiteStock == 0;
 	}
 }
