@@ -17,4 +17,12 @@ public class MoveCommand extends Command {
 	public Piece getMovedPiece() {
 		return piece;
 	}
+	
+	@Override
+	public void run(Board board, PlayerData player) throws InvalidCommandException {
+		if (getMovedPiece() == null) {
+			board.putPiece(getTargetLocation(), player.getColor());
+		}
+		else throw new InvalidCommandException();
+	}
 }

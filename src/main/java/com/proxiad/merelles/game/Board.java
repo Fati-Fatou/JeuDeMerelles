@@ -48,24 +48,8 @@ public class Board {
 		return turnsLeft;
 	}
 	
-	public void runPutCommand(PlayerColor playerColor, PutCommand command) throws InvalidCommandException {
-		Location targetLocation = command.getTargetLocation();
-		if (isLocationFree(targetLocation)) {
-			putPiece(targetLocation, playerColor);
-		}
-		else throw new InvalidCommandException();
-	}
-
 	public boolean isLocationFree(Location location) {
 		return !(pieces().anyMatch(piece -> location.equals(piece.getLocation())));
-	}
-	
-	public void runMoveCommand(PlayerColor playerColor, MoveCommand command) throws InvalidCommandException {
-		// TODO
-		if (command.getMovedPiece() == null) {
-			putPiece(command.getTargetLocation(), playerColor);
-		}
-		else throw new InvalidCommandException();
 	}
 	
 	public void addListener(BoardObserver observer) {

@@ -11,6 +11,7 @@ public class ParserMoveCommand extends Parser<MoveCommand> {
 		super("MOVE", 1);
 	}
 	
+	@Override
 	protected MoveCommand parseCommandArguments(Board board, String message, String[] tokens,
 			Location targetLocation, Piece removePiece) throws ParsingException {
 		

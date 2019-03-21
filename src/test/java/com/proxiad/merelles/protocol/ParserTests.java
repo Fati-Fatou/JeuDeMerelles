@@ -18,9 +18,11 @@ import org.mockito.Spy;
 
 import com.proxiad.merelles.game.Board;
 import com.proxiad.merelles.game.Command;
+import com.proxiad.merelles.game.InvalidCommandException;
 import com.proxiad.merelles.game.Location;
 import com.proxiad.merelles.game.Piece;
 import com.proxiad.merelles.game.PlayerColor;
+import com.proxiad.merelles.game.PlayerData;
 
 public class ParserTests {
 
@@ -31,6 +33,11 @@ public class ParserTests {
 	public static class CommandForTests extends Command {
 		public CommandForTests() {
 			super(new Location(2, 1), null, null);
+		}
+
+		@Override
+		public void run(Board board, PlayerData player) throws InvalidCommandException {
+			// empty when testing			
 		}
 	}
 

@@ -1,10 +1,10 @@
 package com.proxiad.merelles.game;
 
-public class Command {
+public abstract class Command {
 
-	protected Piece removePiece;
-	protected String message;
-	protected Location targetLocation;
+	private Piece removePiece;
+	private String message;
+	private Location targetLocation;
 
 	protected Command(Location targetLocation) {
 		this(targetLocation, null, null);
@@ -43,5 +43,6 @@ public class Command {
 	public Location getTargetLocation() {
 		return targetLocation;
 	}
-
+	
+	public abstract void run(Board board, PlayerData player) throws InvalidCommandException;
 }

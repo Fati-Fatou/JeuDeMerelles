@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import com.proxiad.merelles.game.Board;
 import com.proxiad.merelles.game.InvalidCommandException;
 import com.proxiad.merelles.game.MoveCommand;
+import com.proxiad.merelles.game.Phase;
 import com.proxiad.merelles.game.PlayerColor;
 import com.proxiad.merelles.game.PlayerData;
 import com.proxiad.merelles.game.PutCommand;
@@ -72,19 +73,10 @@ public class Referee extends AbstractReferee {
 			List<String> outputs = player.getOutputs();
 			// Check validity of the player output and compute the new game state
 
-			boolean isSetupPhase = player.getData().getPiecesInStock() > 0;
+			Phase phase = player.getData().getPhase();
+					//new Phase(player.getData().getPiecesInStock() > 0);
+			phase.parseAndRunCommand(outputs.get(0), board, player.getData());
 			
-			if (isSetupPhase) {
-				ParserPutCommand parser = new ParserPutCommand();
-				PutCommand command = parser.parseCommand(outputs.get(0), board);
-				board.runPutCommand(player.getData().getColor(), command);
-				player.getData().updateCountsAfterPut();
-			}
-			else {
-				ParserMoveCommand parser = new ParserMoveCommand();
-				MoveCommand command = parser.parseCommand(outputs.get(0), board);
-				board.runMoveCommand(player.getData().getColor(), command);
-			}			
 		} catch (TimeoutException e) {
 			player.deactivate(prependNickname("timeout!", player));
 		} catch (ParsingException e) {

@@ -8,16 +8,22 @@ public class SetupPhaseTests {
 	private static final Location target = new Location(1, 2);
 
 	private Board board;
+	private PlayerData blackPlayer;
+	private PlayerData whitePlayer;
 	
 	@Before
 	public void setUp() throws Exception {
 		board = new Board();
+		blackPlayer = new PlayerData(board, PlayerColor.BLACK, 9);
+		whitePlayer = new PlayerData(board, PlayerColor.WHITE, 9);
+		blackPlayer.setOpponent(whitePlayer);
+		whitePlayer.setOpponent(blackPlayer);
 	}
 
 	@Test
 	public void testPlacingPieceIsOkDuringSetup() throws InvalidCommandException {
 		PutCommand command = new PutCommand(target);
-		board.runPutCommand(PlayerColor.BLACK, command);
+		command.run(board, blackPlayer);
 		// success
 	}
 
@@ -25,7 +31,7 @@ public class SetupPhaseTests {
 	public void testPlacingPieceOnExsitingOneIsKoDuringSetup() throws InvalidCommandException {
 		board.putPiece(target, PlayerColor.BLACK);
 		PutCommand command = new PutCommand(target);
-		board.runPutCommand(PlayerColor.BLACK, command);
+		command.run(board, blackPlayer);
 	}
 
 	private static MoveCommand move(int pieceId) {
@@ -39,7 +45,7 @@ public class SetupPhaseTests {
 		int newPieceId = existingPieceId;
 
 		MoveCommand command = move(newPieceId);
-		board.runMoveCommand(PlayerColor.BLACK, command);
+		command.run(board, blackPlayer);
 	}
 
 	@Test(expected = InvalidCommandException.class)
@@ -48,6 +54,6 @@ public class SetupPhaseTests {
 		int newPieceId = existingPieceId;
 
 		MoveCommand command = move(newPieceId);
-		board.runMoveCommand(PlayerColor.BLACK, command);
+		command.run(board, blackPlayer);
 	}
 }
