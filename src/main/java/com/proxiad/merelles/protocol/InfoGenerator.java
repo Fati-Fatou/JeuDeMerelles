@@ -8,10 +8,11 @@ import java.util.stream.Stream;
 
 import com.codingame.game.Player;
 import com.proxiad.merelles.game.Board;
-import com.proxiad.merelles.game.MoveCommand;
 import com.proxiad.merelles.game.Location;
+import com.proxiad.merelles.game.MoveCommand;
 import com.proxiad.merelles.game.Piece;
 import com.proxiad.merelles.game.PlayerColor;
+import com.proxiad.merelles.game.PutCommand;
 
 public class InfoGenerator {
 
@@ -31,10 +32,22 @@ public class InfoGenerator {
 		infos.addAll(piecesInfos);
 
 		// Suggested moves
-		List<String> movesInfo =
+		List<String> movesInfo;
+		
+		// TODO characterize
+		boolean setupPhase = true;
+		if (setupPhase) {
+			movesInfo =
+					suggestedPuts(board, player).stream()
+					.map(this::toPutCommandString)
+					.collect(Collectors.toList());
+		}
+		else {
+			movesInfo =
 				suggestedMoves(board, player).stream()
-				.map(this::toCommandString)
+				.map(this::toMoveCommandString)
 				.collect(Collectors.toList());
+		}
 		
 		infos.add(Integer.toString(movesInfo.size()));
 		infos.addAll(movesInfo);
@@ -64,27 +77,44 @@ public class InfoGenerator {
 				piece.getLocation().getRadius());
 	}
 
-	public List<MoveCommand> suggestedMoves(Board board, Player player) {
-		List<MoveCommand> commands = new ArrayList<MoveCommand>(30);
+	public List<PutCommand> suggestedPuts(Board board, Player player) {
+		List<PutCommand> commands = new ArrayList<>(30);
 		
 		// TODO improve perfs
 		for (int direction = 0; direction < 8; ++direction) {
 			for (int radius = 0; radius < 3; ++radius) {
 				Location candidate = new Location(direction, radius);
 				if (board.pieces().allMatch(piece -> !piece.getLocation().equals(candidate))) {
-					commands.add(new MoveCommand(new Piece(0, player.getColor(), candidate), candidate, null, null));
+					commands.add(new PutCommand(candidate, null, null));
 				}
 			}
 		}
 		return commands;
 	}
-	
-	public String toCommandString(MoveCommand command) {
+
+	public List<MoveCommand> suggestedMoves(Board board, Player player) {
+		List<MoveCommand> commands = new ArrayList<>(30);
+		
+		// TODO implement
+		return commands;
+	}
+
+	public String toPutCommandString(PutCommand command) {
 		Location location = command.getTargetLocation();
 		// Suggest to move this piece.
 		// No suggestion for the piece to remove in case of mill, hence 0 as last argument.
 		return String.format(
-				"%d %d %d 0", 
+				"PUT %d %d 0", 
+				location.getDirection(), 
+				location.getRadius());
+	}
+
+	public String toMoveCommandString(MoveCommand command) {
+		Location location = command.getTargetLocation();
+		// Suggest to move this piece.
+		// No suggestion for the piece to remove in case of mill, hence 0 as last argument.
+		return String.format(
+				"MOVE %d %d %d 0", 
 				command.getMovedPiece().getId(), 
 				location.getDirection(), 
 				location.getRadius());
