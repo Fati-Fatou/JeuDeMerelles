@@ -22,7 +22,8 @@ public abstract class Parser<C extends Command> {
 			throw new ParsingException(NO_COMMAND);
 		}
 		String[] messageParts = commandText.split(";");
-		String message = messageParts.length > 1 ? messageParts[1] : null;
+		String messageArg = messageParts.length > 1 ? messageParts[1] : null;
+		String message = messageArg != null ? messageArg.trim() : "";
 		
 		String[] tokens = messageParts[0].split(" ");
 
