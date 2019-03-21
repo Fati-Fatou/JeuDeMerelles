@@ -56,13 +56,13 @@ public class InfoGenerator {
 	}
 	
 	public String infoLine(Board board, Player player) {
-		int myPieces = player.getColor() == PlayerColor.BLACK ? board.getBlackPieces() : board.getWhitePieces();
-		int opponentsPieces = player.getColor() == PlayerColor.BLACK ? board.getWhitePieces() : board.getBlackPieces();
-		int myStock = player.getColor() == PlayerColor.BLACK ? board.getBlackStock() : board.getWhiteStock();
-		int opponentsStock = player.getColor() == PlayerColor.BLACK ? board.getWhiteStock() : board.getBlackStock();
+		int myPieces = player.getData().getPiecesOnBoard();
+		int opponentsPieces = player.getData().getOpponent().getPiecesOnBoard();
+		int myStock = player.getData().getPiecesInStock();
+		int opponentsStock = player.getData().getOpponent().getPiecesInStock();
 		
 		return String.format("%s %d %d %d %d %d",
-					player.getColor() == PlayerColor.BLACK ? "BLACK" : "WHITE",
+					player.getData().getColor() == PlayerColor.BLACK ? "BLACK" : "WHITE",
 					board.getTurnsLeft(),
 					myPieces, opponentsPieces, myStock, opponentsStock);
 	}
@@ -72,7 +72,7 @@ public class InfoGenerator {
 			String.format(
 				"%d %d %d %d", 
 				piece.getId(),
-				piece.getColor() == player.getColor() ? 0 : 1,
+				piece.getColor() == player.getData().getColor() ? 0 : 1,
 				piece.getLocation().getDirection(), 
 				piece.getLocation().getRadius());
 	}

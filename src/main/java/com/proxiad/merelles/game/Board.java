@@ -18,11 +18,6 @@ public class Board {
 	
 	private int turnsLeft = 200;
 	
-	private int blackStock = 9;
-	private int whiteStock = 9;
-	private int blackPieces = 0;
-	private int whitePieces = 0;
-	
 	private List<BoardObserver> observers = new ArrayList<>();
 	
 	/**
@@ -43,66 +38,25 @@ public class Board {
 	public int putPiece(Location location, PlayerColor color) {
 		Piece addedPiece = new Piece(nextId++, color, location);
 		knownPieces.put(addedPiece.getId(), addedPiece);
-		if(color == PlayerColor.BLACK) {
-			++blackPieces;
-			--blackStock;
-		}
-		else {
-			++whitePieces;
-			--whiteStock;
-		}
 		
 		observers.forEach(observer -> observer.pieceAdded(addedPiece));
 		
 		return addedPiece.getId();
+	}
+	
+	public void movePiece(Piece piece, Location targetLocation) {
+		// TODO
 	}
 
 	public int getTurnsLeft() {
 		return turnsLeft;
 	}
 	
-	public int getBlackStock() {
-		return blackStock;
-	}
-
-	public int getWhiteStock() {
-		return whiteStock;
-	}
-
-	public int getBlackPieces() {
-		return blackPieces;
-	}
-
-	public int getWhitePieces() {
-		return whitePieces;
-	}
-
-	public void runPutCommand(PlayerColor playerColor, PutCommand command) throws InvalidCommandException {
-		Location targetLocation = command.getTargetLocation();
-		if (isLocationFree(targetLocation)) {
-			putPiece(targetLocation, playerColor);
-		}
-		else throw new InvalidCommandException();
-	}
-
 	public boolean isLocationFree(Location location) {
 		return !(pieces().anyMatch(piece -> location.equals(piece.getLocation())));
 	}
 	
-	public void runMoveCommand(PlayerColor playerColor, MoveCommand command) throws InvalidCommandException {
-		// TODO
-		if (command.getMovedPiece() == null) {
-			putPiece(command.getTargetLocation(), playerColor);
-		}
-		else throw new InvalidCommandException();
-	}
-	
 	public void addListener(BoardObserver observer) {
 		observers.add(observer);
-	}
-	
-	public boolean isGameEnded() {
-		// TODO
-		return blackStock == 0 && whiteStock == 0;
 	}
 }

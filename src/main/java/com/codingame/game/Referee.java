@@ -9,7 +9,9 @@ import com.google.inject.Inject;
 import com.proxiad.merelles.game.Board;
 import com.proxiad.merelles.game.InvalidCommandException;
 import com.proxiad.merelles.game.MoveCommand;
+import com.proxiad.merelles.game.Phase;
 import com.proxiad.merelles.game.PlayerColor;
+import com.proxiad.merelles.game.PlayerData;
 import com.proxiad.merelles.game.PutCommand;
 import com.proxiad.merelles.protocol.InfoGenerator;
 import com.proxiad.merelles.protocol.ParserMoveCommand;
@@ -18,6 +20,9 @@ import com.proxiad.merelles.protocol.ParsingException;
 import com.proxiad.merelles.view.ViewController;
 
 public class Referee extends AbstractReferee {
+	
+	private static final int numberOfPiecesPerPlayer = 9;
+	
 	// Uncomment the line below and comment the line under it to create a Solo Game
 	// @Inject private SoloGameManager<Player> gameManager;
 	@Inject private MultiplayerGameManager<Player> gameManager;
@@ -31,11 +36,21 @@ public class Referee extends AbstractReferee {
 		// Initialize your game here.
 		board = new Board();
 		view = new ViewController(graphicEntityModule, board);
+		
+		PlayerData blackPlayer = new PlayerData(board, PlayerColor.BLACK, numberOfPiecesPerPlayer);
+		PlayerData whitePlayer = new PlayerData(board, PlayerColor.WHITE, numberOfPiecesPerPlayer);
+		blackPlayer.setOpponent(whitePlayer);
+		whitePlayer.setOpponent(blackPlayer);
 
-		PlayerColor nextColor = PlayerColor.BLACK;
+		boolean firstPlayer = true;
 		for (Player player : gameManager.getActivePlayers()) {
-			player.setColor(nextColor);
-			nextColor = PlayerColor.WHITE;
+			if (firstPlayer) {
+				player.setData(blackPlayer);
+				firstPlayer = false;
+			}
+			else {
+				player.setData(whitePlayer);
+			}
 		}
 		view.update();
 	}
@@ -58,24 +73,10 @@ public class Referee extends AbstractReferee {
 			List<String> outputs = player.getOutputs();
 			// Check validity of the player output and compute the new game state
 
-			boolean isSetupPhase;
-			if (player.getColor() == PlayerColor.BLACK) {
-				isSetupPhase = board.getBlackStock() > 0;
-			}
-			else {
-				isSetupPhase = board.getWhiteStock() > 0;
-			}
+			Phase phase = player.getData().getPhase();
+					//new Phase(player.getData().getPiecesInStock() > 0);
+			phase.parseAndRunCommand(outputs.get(0), board, player.getData());
 			
-			if (isSetupPhase) {
-				ParserPutCommand parser = new ParserPutCommand();
-				PutCommand command = parser.parseCommand(outputs.get(0), board);
-				board.runPutCommand(player.getColor(), command);
-			}
-			else {
-				ParserMoveCommand parser = new ParserMoveCommand();
-				MoveCommand command = parser.parseCommand(outputs.get(0), board);
-				board.runMoveCommand(player.getColor(), command);
-			}			
 		} catch (TimeoutException e) {
 			player.deactivate(prependNickname("timeout!", player));
 		} catch (ParsingException e) {
@@ -88,7 +89,8 @@ public class Referee extends AbstractReferee {
 			e.printStackTrace();
 		}
 
-		if (board.isGameEnded()) {
+		// TODO end of game
+		if (player.getData().getPiecesInStock() == 0 && player.getData().getOpponent().getPiecesInStock() == 0) {
 			gameManager.endGame();
 		}
 	}
