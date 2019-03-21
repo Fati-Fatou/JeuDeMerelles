@@ -6,7 +6,7 @@ import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.proxiad.merelles.game.Command;
+import com.proxiad.merelles.game.MoveCommand;
 import com.proxiad.merelles.game.Location;
 import com.proxiad.merelles.game.Piece;
 import com.proxiad.merelles.game.PlayerColor;
@@ -29,7 +29,7 @@ public abstract class ParsingAgent {
 	public void mainLoop(Scanner scanner, PrintStream out) {
 		while (true) {
 			GameDesc game = parseInfos(scanner);
-			Command command = play(game);
+			MoveCommand command = play(game);
 			sendCommand(command, out);
 		}		
 	}
@@ -62,7 +62,7 @@ public abstract class ParsingAgent {
 			pieces.add(new Piece(id, color, new Location(direction, radius)));
 		}
 
-		List<Command> moves = new ArrayList<>();
+		List<MoveCommand> moves = new ArrayList<>();
 
 		int nbMoves = Integer.parseInt(scanner.nextLine());
 		for (int i = 0; i < nbMoves; ++i) {
@@ -86,7 +86,7 @@ public abstract class ParsingAgent {
 					.filter(isThisRemovePiece)
 					.findAny()
 					.orElse(null);
-			moves.add(new Command(piece, new Location(direction, radius), removePiece, null));
+			moves.add(new MoveCommand(piece, new Location(direction, radius), removePiece, null));
 		}
 
 		GameDesc.PlayerDesc me = new GameDesc.PlayerDesc(myColor, myPieces, myStock);
@@ -97,9 +97,9 @@ public abstract class ParsingAgent {
 		return game;
 	}
 
-	protected abstract Command play(GameDesc game);
+	protected abstract MoveCommand play(GameDesc game);
 
-	protected void sendCommand(Command command, PrintStream out) {
+	protected void sendCommand(MoveCommand command, PrintStream out) {
 		Location location = command.getTargetLocation();
 		String output = String.format(
 				"%d %d %d 0", 
