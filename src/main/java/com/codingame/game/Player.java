@@ -1,12 +1,13 @@
 package com.codingame.game;
 import com.codingame.gameengine.core.AbstractMultiplayerPlayer;
 import com.proxiad.merelles.game.PlayerColor;
+import com.proxiad.merelles.game.PlayerData;
 
 // Uncomment the line below and comment the line under it to create a Solo Game
 // public class Player extends AbstractSoloPlayer {
 public class Player extends AbstractMultiplayerPlayer {
 	
-	private PlayerColor color;
+	private PlayerData data;
 	
     @Override
     public int getExpectedOutputLines() {
@@ -14,15 +15,15 @@ public class Player extends AbstractMultiplayerPlayer {
         return 1;
     }
     
-    public PlayerColor getColor() {
-    	return color;
+    public PlayerData getData() {
+    	return data;
     }
     
-    public void setColor(PlayerColor color) {
-    	this.color = color;
+    public void setData(PlayerData data) {
+    	this.data = data;
     }
     
     public int colorToOwnerId(PlayerColor aColor) {
-    	return getColor() == aColor ? 0 : 1;
+    	return data.getColor() == aColor ? 0 : 1;
     }
 }

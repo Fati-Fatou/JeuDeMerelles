@@ -1,12 +1,14 @@
 package com.proxiad.merelles.game;
 
 public class PlayerData {
+	private Board board;
 	private PlayerColor color;
 	private PlayerData opponent;
 	private int piecesOnBoard;
 	private int piecesInStock;
 	
-	public PlayerData(PlayerColor color, int numberOfStockPieces) {
+	public PlayerData(Board board, PlayerColor color, int numberOfStockPieces) {
+		this.board = board;
 		this.color = color;
 		piecesInStock = numberOfStockPieces;
 	}
@@ -29,5 +31,10 @@ public class PlayerData {
 
 	public int getPiecesInStock() {
 		return piecesInStock;
+	}
+
+	public void updateCountsAfterPut() {
+		++piecesOnBoard;
+		--piecesInStock;		
 	}
 }

@@ -14,19 +14,24 @@ import com.codingame.game.Player;
 import com.proxiad.merelles.game.Board;
 import com.proxiad.merelles.game.Location;
 import com.proxiad.merelles.game.PlayerColor;
+import com.proxiad.merelles.game.PlayerData;
 
 public class InfoGeneratorTests {
 
 	static class ControlledColorPlayer extends Player {
-		private PlayerColor color;
-		
+		private PlayerData data;
+
 		ControlledColorPlayer(PlayerColor color) {
-			this.color = color;
+			data = new PlayerData(null, color, 9);
+			
+			PlayerColor oppositeColor = color == PlayerColor.BLACK ? PlayerColor.WHITE : PlayerColor.BLACK;
+			PlayerData opponent = new PlayerData(null, oppositeColor, 9);
+			data.setOpponent(opponent);
 		}
 
 		@Override
-		public PlayerColor getColor() {
-			return color;
+		public PlayerData getData() {
+			return data;
 		}
 	}
 	
@@ -77,6 +82,7 @@ public class InfoGeneratorTests {
 	public void testFirstWhiteInfo() {
 		// black player plays
 		board.putPiece(new Location(2, 1), PlayerColor.BLACK);
+		whitePlayer.getData().getOpponent().updateCountsAfterPut();
 		
 		// what does white player receive?
 		List<String> whiteInfos = generator.gameInfoForPlayer(board, whitePlayer).collect(Collectors.toList());
