@@ -43,6 +43,10 @@ public class Board {
 		
 		return addedPiece.getId();
 	}
+	
+	public void movePiece(Piece piece, Location targetLocation) {
+		// TODO
+	}
 
 	public int getTurnsLeft() {
 		return turnsLeft;

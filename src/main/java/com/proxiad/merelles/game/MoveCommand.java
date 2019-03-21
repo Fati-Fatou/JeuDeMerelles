@@ -5,6 +5,14 @@ public class MoveCommand extends Command {
 	// The piece to be moved
 	private Piece piece;
 
+	public MoveCommand(Piece piece, Location targetLocation) {
+		this(piece, targetLocation, null, null);
+	}
+
+	public MoveCommand(Piece piece, Location targetLocation, Piece removePiece) {
+		this(piece, targetLocation, removePiece, null);
+	}
+	
 	public MoveCommand(Piece piece, Location targetLocation, Piece removePiece, String message) {
 		super(targetLocation, removePiece, message);
 		this.piece = piece;
@@ -20,9 +28,15 @@ public class MoveCommand extends Command {
 	
 	@Override
 	public void run(Board board, PlayerData player) throws InvalidCommandException {
-		if (getMovedPiece() == null) {
-			board.putPiece(getTargetLocation(), player.getColor());
+		Piece movedPiece = getMovedPiece();
+		Location target = getTargetLocation();
+		
+		if (movedPiece == null 
+				|| !movedPiece.getColor().equals(player.getColor())
+				|| !board.isLocationFree(target)) {
+			throw new InvalidCommandException();
 		}
-		else throw new InvalidCommandException();
+		
+		board.movePiece(movedPiece, target);
 	}
 }
