@@ -20,7 +20,7 @@ public class PlacementPhase extends Phase {
 				.map(formatter::formatPut);
 	}
 
-	public List<PutCommand> suggestedPuts(Board board) {
+	private List<PutCommand> suggestedPuts(Board board) {
 		List<PutCommand> commands = new ArrayList<>(30);
 
 		// TODO improve perfs
