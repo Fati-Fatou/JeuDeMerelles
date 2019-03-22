@@ -52,4 +52,25 @@ public class Location {
 		return true;
 	}
 
+	public boolean isAdjacent(Location location) {
+		// Same odd direction (1, 3...): radius difference must be 1
+		if (location.getDirection() == getDirection() && (getDirection() % 2 == 1)) {
+			return isNextTo(location.getRadius(), getRadius());
+		}
+		
+		// Same radius: direction difference must be 1, modulo 8
+		if (location.getRadius() == getRadius()) {
+			return isNextToModulo8(location.getDirection(), getDirection());
+		}
+		
+		return false;
+	}
+	
+	private static boolean isNextTo(int a, int b) {
+		return a == b + 1 || a == b - 1;
+	}
+
+	private static boolean isNextToModulo8(int a, int b) {
+		return (a == (b + 1) % 8) || (a == (b - 1 + 8) % 8);
+	}
 }

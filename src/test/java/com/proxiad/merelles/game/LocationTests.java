@@ -32,4 +32,60 @@ public class LocationTests {
 		Location location2 = new Location(3,1);
 		assertNotEquals(location1, location2);
 	}
+
+	@Test
+	public void testSameLocationIsNotAdjacent() {
+		Location location1 = new Location(3,1);
+		Location location2 = new Location(3,1);
+		assertFalse(location1.isAdjacent(location2));
+	}
+
+	@Test
+	public void testMiddleOfHorizontalLineIsAdjacentToCornerOnSameLine() {
+		Location location1 = new Location(1,2);
+		Location location2 = new Location(0,2);
+		assertTrue(location1.isAdjacent(location2));
+	}
+
+	@Test
+	public void testMiddleOfHorizontalLineIsAdjacentToOtherCornerOnSameLine() {
+		Location location1 = new Location(1,2);
+		Location location2 = new Location(2,2);
+		assertTrue(location1.isAdjacent(location2));
+	}
+
+	@Test
+	public void testMiddleOfHorizontalLineIsNotAdjacentToMiddleOfOtherLine() {
+		Location location1 = new Location(1,2);
+		Location location2 = new Location(3,2);
+		assertFalse(location1.isAdjacent(location2));
+	}
+
+	@Test
+	public void testMiddleOfHorizontalLineIsAdjacentToClosestVerticalSlot() {
+		Location location1 = new Location(1,1);
+		Location location2 = new Location(1,2);
+		assertTrue(location1.isAdjacent(location2));
+	}
+
+	@Test
+	public void testAdjacentPassingDirection0Ascending() {
+		Location location1 = new Location(0,1);
+		Location location2 = new Location(7,1);
+		assertTrue(location1.isAdjacent(location2));
+	}
+
+	@Test
+	public void testAdjacentPassingDirection0Descending() {
+		Location location1 = new Location(7,1);
+		Location location2 = new Location(0,1);
+		assertTrue(location1.isAdjacent(location2));
+	}
+
+	@Test
+	public void testAdjacentNotAdjacentPassingRadisu0() {
+		Location location1 = new Location(5,0);
+		Location location2 = new Location(5,2);
+		assertFalse(location1.isAdjacent(location2));
+	}
 }

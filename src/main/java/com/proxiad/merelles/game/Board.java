@@ -44,8 +44,8 @@ public class Board {
 		return addedPiece.getId();
 	}
 	
-	public void movePiece(Piece piece, Location targetLocation) {
-		// TODO
+	public void movePiece(Piece piece, Location targetLocation) throws InvalidCommandException {
+		piece.move(targetLocation);
 	}
 
 	public int getTurnsLeft() {
