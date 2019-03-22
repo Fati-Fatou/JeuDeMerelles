@@ -48,7 +48,7 @@ public class MovementPhaseTests {
 	}
 	
 	@Test
-	public void testSuggestedMoves() {
+	public void testSuggestedMovesOnePiece() {
 		List<MoveCommand> commands = new ArrayList<>();
 		when(formatter.formatMove(ArgumentMatchers.any())).thenAnswer(new Answer<String>() {
 		    @Override
@@ -69,6 +69,64 @@ public class MovementPhaseTests {
 		assertEquals(2, commands.size());
 		assertTrue(commands.stream().anyMatch(move -> move.getTargetLocation().equals(new Location(7,1))));
 		assertTrue(commands.stream().anyMatch(move -> move.getTargetLocation().equals(new Location(1,1))));
+		verify(formatter, never()).formatPut(ArgumentMatchers.any());
+	}
+
+	@Test
+	public void testSuggestedMovesTwoPieces() {
+		List<MoveCommand> commands = new ArrayList<>();
+		when(formatter.formatMove(ArgumentMatchers.any())).thenAnswer(new Answer<String>() {
+		    @Override
+		    public String answer(InvocationOnMock invocation) throws Throwable {
+		      Object[] args = invocation.getArguments();
+		      commands.add((MoveCommand) args[0]);
+		      return "";
+		    }
+		});
+
+		Board board = new Board();
+		board.putPiece(new Location(0,1), PlayerColor.BLACK);
+		board.putPiece(new Location(4,2), PlayerColor.BLACK);
+		PlayerData player = new PlayerData(board, PlayerColor.BLACK, 9);
+		MovementPhase movementPhase = new MovementPhase(player);
+		
+		movementPhase.suggest(board, formatter).collect(Collectors.toList());
+
+		assertEquals(4, commands.size());
+		assertTrue(commands.stream().anyMatch(move -> move.getTargetLocation().equals(new Location(7,1))));
+		assertTrue(commands.stream().anyMatch(move -> move.getTargetLocation().equals(new Location(1,1))));
+		assertTrue(commands.stream().anyMatch(move -> move.getTargetLocation().equals(new Location(3,2))));
+		assertTrue(commands.stream().anyMatch(move -> move.getTargetLocation().equals(new Location(5,2))));
+		verify(formatter, never()).formatPut(ArgumentMatchers.any());
+	}
+	
+	@Test
+	public void testSuggestedMovesTwoPiecesWithConstraints() {
+		List<MoveCommand> commands = new ArrayList<>();
+		when(formatter.formatMove(ArgumentMatchers.any())).thenAnswer(new Answer<String>() {
+		    @Override
+		    public String answer(InvocationOnMock invocation) throws Throwable {
+		      Object[] args = invocation.getArguments();
+		      commands.add((MoveCommand) args[0]);
+		      return "";
+		    }
+		});
+
+		Board board = new Board();
+		board.putPiece(new Location(0,1), PlayerColor.BLACK);
+		board.putPiece(new Location(4,2), PlayerColor.BLACK);
+		board.putPiece(new Location(1,1), PlayerColor.WHITE);
+		board.putPiece(new Location(3,2), PlayerColor.BLACK);
+		PlayerData player = new PlayerData(board, PlayerColor.BLACK, 9);
+		MovementPhase movementPhase = new MovementPhase(player);
+		
+		movementPhase.suggest(board, formatter).collect(Collectors.toList());
+
+		assertEquals(4, commands.size());
+		assertTrue(commands.stream().anyMatch(move -> move.getTargetLocation().equals(new Location(7,1))));
+		assertTrue(commands.stream().anyMatch(move -> move.getTargetLocation().equals(new Location(5,2))));
+		assertTrue(commands.stream().anyMatch(move -> move.getTargetLocation().equals(new Location(2,2))));
+		assertTrue(commands.stream().anyMatch(move -> move.getTargetLocation().equals(new Location(5,2))));
 		verify(formatter, never()).formatPut(ArgumentMatchers.any());
 	}
 }
