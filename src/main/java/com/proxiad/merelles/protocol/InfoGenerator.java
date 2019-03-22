@@ -8,13 +8,15 @@ import java.util.stream.Stream;
 
 import com.codingame.game.Player;
 import com.proxiad.merelles.game.Board;
+import com.proxiad.merelles.game.CommandFormatter;
 import com.proxiad.merelles.game.Location;
 import com.proxiad.merelles.game.MoveCommand;
+import com.proxiad.merelles.game.Phase;
 import com.proxiad.merelles.game.Piece;
 import com.proxiad.merelles.game.PlayerColor;
 import com.proxiad.merelles.game.PutCommand;
 
-public class InfoGenerator {
+public class InfoGenerator implements CommandFormatter {
 
 	public Stream<String> gameInfoForPlayer(Board board, Player player) {
 		List<String> infos = new ArrayList<String>(30);
@@ -31,23 +33,9 @@ public class InfoGenerator {
 		infos.add(Integer.toString(piecesInfos.size()));
 		infos.addAll(piecesInfos);
 
-		// Suggested moves
-		List<String> movesInfo;
-		
-		// TODO characterize
-		boolean setupPhase = true;
-		if (setupPhase) {
-			movesInfo =
-					suggestedPuts(board, player).stream()
-					.map(this::toPutCommandString)
-					.collect(Collectors.toList());
-		}
-		else {
-			movesInfo =
-				suggestedMoves(board, player).stream()
-				.map(this::toMoveCommandString)
-				.collect(Collectors.toList());
-		}
+		// Suggested moves	
+		Phase phase = player.getData().getPhase();
+		List<String> movesInfo = phase.suggest(board, this).collect(Collectors.toList());
 		
 		infos.add(Integer.toString(movesInfo.size()));
 		infos.addAll(movesInfo);
@@ -77,29 +65,8 @@ public class InfoGenerator {
 				piece.getLocation().getRadius());
 	}
 
-	public List<PutCommand> suggestedPuts(Board board, Player player) {
-		List<PutCommand> commands = new ArrayList<>(30);
-		
-		// TODO improve perfs
-		for (int direction = 0; direction < 8; ++direction) {
-			for (int radius = 0; radius < 3; ++radius) {
-				Location candidate = new Location(direction, radius);
-				if (board.pieces().allMatch(piece -> !piece.getLocation().equals(candidate))) {
-					commands.add(new PutCommand(candidate, null, null));
-				}
-			}
-		}
-		return commands;
-	}
-
-	public List<MoveCommand> suggestedMoves(Board board, Player player) {
-		List<MoveCommand> commands = new ArrayList<>(30);
-		
-		// TODO implement
-		return commands;
-	}
-
-	public String toPutCommandString(PutCommand command) {
+	@Override
+	public String formatPut(PutCommand command) {
 		Location location = command.getTargetLocation();
 		// Suggest to move this piece.
 		// No suggestion for the piece to remove in case of mill, hence 0 as last argument.
@@ -109,7 +76,8 @@ public class InfoGenerator {
 				location.getRadius());
 	}
 
-	public String toMoveCommandString(MoveCommand command) {
+	@Override
+	public String formatMove(MoveCommand command) {
 		Location location = command.getTargetLocation();
 		// Suggest to move this piece.
 		// No suggestion for the piece to remove in case of mill, hence 0 as last argument.

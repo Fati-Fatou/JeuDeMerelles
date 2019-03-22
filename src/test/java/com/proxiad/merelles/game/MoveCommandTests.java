@@ -15,6 +15,7 @@ public class MoveCommandTests {
 	private static final int pieceId = 1;
 	private static final Location source = new Location(1, 1);
 	private static final Location target = new Location(1, 2);
+	private static final Location nonAdjacentTarget = new Location(0, 2);
 
 	private static final Piece blackPieceAtSource = new Piece(pieceId, PlayerColor.BLACK, source);
 	private static final Piece whitePieceAtSource = new Piece(pieceId, PlayerColor.WHITE, source);
@@ -80,6 +81,29 @@ public class MoveCommandTests {
 		when(board.isLocationFree(target)).thenReturn(false);
 
 		MoveCommand command = new MoveCommand(blackPieceAtSource, target);
+		
+		InvalidCommandException exc = null;
+		try {
+			command.run(board, blackPlayer);
+		} catch(InvalidCommandException e) {
+			exc = e;
+		}
+
+		verify(blackPlayer, never()).updateCountsAfterPut();
+		verify(board, never()).putPiece(ArgumentMatchers.any(), ArgumentMatchers.any());
+		verify(board, never()).movePiece(ArgumentMatchers.any(), ArgumentMatchers.any());
+
+		if (exc != null) {
+			throw exc;
+		}
+	}
+
+	@Test(expected = InvalidCommandException.class)
+	public void testJumpingToNonAdjacentIsKo() throws InvalidCommandException {
+
+		when(board.isLocationFree(nonAdjacentTarget)).thenReturn(true);
+
+		MoveCommand command = new MoveCommand(blackPieceAtSource, nonAdjacentTarget);
 		
 		InvalidCommandException exc = null;
 		try {

@@ -74,7 +74,6 @@ public class Referee extends AbstractReferee {
 			// Check validity of the player output and compute the new game state
 
 			Phase phase = player.getData().getPhase();
-					//new Phase(player.getData().getPiecesInStock() > 0);
 			phase.parseAndRunCommand(outputs.get(0), board, player.getData());
 			
 		} catch (TimeoutException e) {
@@ -90,7 +89,8 @@ public class Referee extends AbstractReferee {
 		}
 
 		// TODO end of game
-		if (player.getData().getPiecesInStock() == 0 && player.getData().getOpponent().getPiecesInStock() == 0) {
+		//if (player.getData().getPiecesInStock() == 0 && player.getData().getOpponent().getPiecesInStock() == 0) {
+		if (turn > 300) {
 			gameManager.endGame();
 		}
 	}

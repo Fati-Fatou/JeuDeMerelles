@@ -2,9 +2,6 @@ package com.proxiad.merelles.game;
 
 public class PlayerData {
 	
-	private static final Phase placementPhase = new PlacementPhase();
-	private static final Phase movementPhase = new MovementPhase();
-	
 	private Board board;
 	private PlayerColor color;
 	private PlayerData opponent;
@@ -42,7 +39,7 @@ public class PlayerData {
 		--piecesInStock;		
 	}
 
-	public Phase getPhase() {
-		return getPiecesInStock() > 0 ? placementPhase : movementPhase;
+	public Phase getPhase() {	
+		return getPiecesInStock() > 0 ? new PlacementPhase() : new MovementPhase(this);
 	}
 }
