@@ -59,4 +59,38 @@ public class MillsTests {
 		List<Mill> mills = board.findMills();
 		assertEquals(0, mills.size());
 	}
+	
+	@Test
+	public void testTwiceTheSameMill() {
+		Board board = new Board();
+		board.putPiece(new Location(6,2), PlayerColor.BLACK);
+		board.putPiece(new Location(5,2), PlayerColor.BLACK);
+		board.putPiece(new Location(4,2), PlayerColor.BLACK);
+		
+		// first detection
+		board.findMills();
+		
+		// second detection: not a mill anymore
+		List<Mill> mills = board.findMills();
+		assertEquals(0, mills.size());
+	}
+
+	@Test
+	public void testTwiceWithSamePiecesMill() throws InvalidCommandException {
+		Board board = new Board();
+		int id1 = board.putPiece(new Location(6,2), PlayerColor.BLACK);
+		int id2 = board.putPiece(new Location(5,2), PlayerColor.BLACK);
+		board.putPiece(new Location(4,2), PlayerColor.BLACK);
+
+		// first detection
+		board.findMills();
+
+		// permutation
+		board.movePiece(board.findPieceById(id1), new Location(0, 0));
+		board.movePiece(board.findPieceById(id2), new Location(6, 2));
+		board.movePiece(board.findPieceById(id1), new Location(5, 2));
+
+		List<Mill> mills = board.findMills();
+		assertEquals(0, mills.size());
+	}
 }

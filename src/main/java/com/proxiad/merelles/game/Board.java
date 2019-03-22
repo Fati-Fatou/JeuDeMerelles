@@ -2,9 +2,11 @@ package com.proxiad.merelles.game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -17,13 +19,16 @@ public class Board {
 	
 	public class MillDetector {
 		private List<Location> locations;
+		private List<Set<Integer>> alreadySeen;
 
 		public MillDetector(List<Location> locations) {
 			this.locations = locations;
+			alreadySeen = new ArrayList<>();
 		}
 		
 		public Mill detect() {
 			Optional<PlayerColor> color = Optional.empty();
+			Set<Integer> constituents = new HashSet<>();
 			
 			for (int i = 0; i < locations.size(); ++i) {
 				Optional<Piece> piece = findByLocation(locations.get(i));
@@ -33,18 +38,37 @@ public class Board {
 					return null;
 				}
 				
+				Piece actualPiece = piece.get();
+				
 				if (color.isPresent()) {
-					if (piece.get().getColor() != color.get()) {
+					if (actualPiece.getColor() != color.get()) {
 						// wrong color
 						return null;
 					}
 				}
 				else {
 					// first slot: save the color of the mill
-					color = Optional.of(piece.get().getColor());
+					color = Optional.of(actualPiece.getColor());
 				}
+				constituents.add(actualPiece.getId());
 			}
+			
+			if (isAlreadySeen(constituents)) {
+				return null;
+			}
+			alreadySeen.add(constituents);
 			return new Mill();
+		}
+
+		private boolean isAlreadySeen(Set<Integer> constituents) {
+			return alreadySeen.stream().anyMatch(seen -> {
+				for (Integer pieceId : constituents) {
+					if (!seen.contains(pieceId)) {
+						return false;
+					}
+				}
+				return true;
+			});
 		}
 	}
 	
