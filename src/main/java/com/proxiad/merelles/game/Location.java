@@ -1,5 +1,8 @@
 package com.proxiad.merelles.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Location {
 	
 	private int direction;
@@ -72,5 +75,19 @@ public class Location {
 
 	private static boolean isNextToModulo8(int a, int b) {
 		return (a == (b + 1) % 8) || (a == (b - 1 + 8) % 8);
+	}
+
+	public List<Location> getAdjacentLocations() {
+		List<Location> ret = new ArrayList<Location>();
+		
+		for (int direction = 0; direction < 8; ++direction) {
+			for (int radius = 0; radius < 3; ++radius) {
+				Location candidate = new Location(direction, radius);
+				if (isAdjacent(candidate)) {
+					ret.add(candidate);
+				}
+			}
+		}
+		return ret;
 	}
 }

@@ -1,6 +1,11 @@
 package com.proxiad.merelles.game;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -87,5 +92,74 @@ public class LocationTests {
 		Location location1 = new Location(5,0);
 		Location location2 = new Location(5,2);
 		assertFalse(location1.isAdjacent(location2));
+	}
+	
+	@Test
+	public void testAdjacentLocationsFromCornerExtern() {
+		Location location = new Location(0, 2);
+		List<Location> adjacentLocations = location.getAdjacentLocations();
+		assertEquals(2, adjacentLocations.size());
+		assertTrue(adjacentLocations.contains(new Location(1, 2)));
+		assertTrue(adjacentLocations.contains(new Location(7, 2)));
+	}
+
+	@Test
+	public void testAdjacentLocationsFromMiddleExtern() {
+		Location location = new Location(5, 2);
+		List<Location> adjacentLocations = location.getAdjacentLocations();
+		assertEquals(3, adjacentLocations.size());
+		assertTrue(adjacentLocations.contains(new Location(5, 1)));
+		assertTrue(adjacentLocations.contains(new Location(6, 2)));
+		assertTrue(adjacentLocations.contains(new Location(4, 2)));
+	}
+
+	@Test
+	public void testAdjacentLocationsFromVerticalCross() {
+		Location location = new Location(5, 1);
+		List<Location> adjacentLocations = location.getAdjacentLocations();
+		assertEquals(4, adjacentLocations.size());
+		assertTrue(adjacentLocations.contains(new Location(4, 1)));
+		assertTrue(adjacentLocations.contains(new Location(6, 1)));
+		assertTrue(adjacentLocations.contains(new Location(5, 0)));
+		assertTrue(adjacentLocations.contains(new Location(5, 2)));
+	}
+
+	@Test
+	public void testAdjacentLocationsFromHorizontalCross() {
+		Location location = new Location(7, 1);
+		List<Location> adjacentLocations = location.getAdjacentLocations();
+		assertEquals(4, adjacentLocations.size());
+		assertTrue(adjacentLocations.contains(new Location(7, 2)));
+		assertTrue(adjacentLocations.contains(new Location(7, 0)));
+		assertTrue(adjacentLocations.contains(new Location(0, 1)));
+		assertTrue(adjacentLocations.contains(new Location(6, 1)));
+	}
+
+	@Test
+	public void testAdjacentLocationsFromIntermediateCorner() {
+		Location location = new Location(4, 1);
+		List<Location> adjacentLocations = location.getAdjacentLocations();
+		assertEquals(2, adjacentLocations.size());
+		assertTrue(adjacentLocations.contains(new Location(3, 1)));
+		assertTrue(adjacentLocations.contains(new Location(5, 1)));
+	}
+
+	@Test
+	public void testAdjacentLocationsFromInternalCorner() {
+		Location location = new Location(4, 0);
+		List<Location> adjacentLocations = location.getAdjacentLocations();
+		assertEquals(2, adjacentLocations.size());
+		assertTrue(adjacentLocations.contains(new Location(3, 0)));
+		assertTrue(adjacentLocations.contains(new Location(5, 0)));
+	}
+
+	@Test
+	public void testAdjacentLocationsFromMiddleIntern() {
+		Location location = new Location(5, 0);
+		List<Location> adjacentLocations = location.getAdjacentLocations();
+		assertEquals(3, adjacentLocations.size());
+		assertTrue(adjacentLocations.contains(new Location(4, 0)));
+		assertTrue(adjacentLocations.contains(new Location(6, 0)));
+		assertTrue(adjacentLocations.contains(new Location(5, 1)));
 	}
 }
