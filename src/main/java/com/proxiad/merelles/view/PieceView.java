@@ -28,7 +28,7 @@ public class PieceView implements PieceObserver {
 		}
 
 		int computeY(int radius) {
-			return centerY + (radius +1 ) * dy;
+			return centerY + (radius +1)* dy;
 		}
 	}
 
