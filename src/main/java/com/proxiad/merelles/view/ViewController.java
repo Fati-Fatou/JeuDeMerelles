@@ -10,35 +10,23 @@ import com.proxiad.merelles.game.Piece;
 
 public class ViewController implements BoardObserver {
 
-	private GraphicEntityModule entityModule;
+	private SpriteManager spriteManager;
 	private Map<Integer, PieceView> pieces = new HashMap<>();
 	private Board board;
 	
 	public ViewController(GraphicEntityModule entityModule, Board board) {
-		this.entityModule = entityModule;
+		spriteManager = new SpriteManager(entityModule);
 		this.board = board;
 		this.board.addListener(this);
-		createBackground();
+		spriteManager.createBackground();
 	}
 
 	public void update() {
 		pieces.values().forEach(PieceView::updateView);
 	}
 	
-	private void createBackground() {
-		entityModule.createSprite()
-		.setImage("board.png")
-		.setBaseWidth(1200)
-		.setBaseHeight(1200)
-		.setX(0)
-		.setY(0)
-		.setScale(1)
-		.setAnchor(0)
-		.setZIndex(-1);
-	}
-	
 	public void registerPieceView(Piece piece) {
-		pieces.put(piece.getId(), new PieceView(entityModule, piece));
+		pieces.put(piece.getId(), new PieceView(piece, spriteManager.createPieceSprite(piece.getColor())));
 	}
 
 	@Override
