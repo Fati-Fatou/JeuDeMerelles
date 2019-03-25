@@ -21,11 +21,11 @@ public class PieceView implements PieceObserver {
 		}
 
 		int computeX(int radius) {
-			return centerX + (radius + 1)* dx;
+			return centerX + (radius + 1) * dx;
 		}
 
 		int computeY(int radius) {
-			return centerY + (radius +1 ) * dy;
+			return centerY + (radius + 1) * dy;
 		}
 	}
 

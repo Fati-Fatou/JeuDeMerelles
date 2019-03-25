@@ -1,8 +1,11 @@
 package com.proxiad.merelles.game;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class Command {
 
-	private Piece removePiece;
+	private List<Piece> removePieces;
 	private String message;
 	private Location targetLocation;
 
@@ -16,16 +19,19 @@ public abstract class Command {
 
 	protected Command(Location targetLocation, Piece removePiece, String message) {
 		this.targetLocation = targetLocation;
-		this.removePiece = removePiece;
+		this.removePieces = new ArrayList<>();
+		if (removePiece != null) {
+			removePieces.add(removePiece);
+		}
 		this.message = message != null ? message.trim() : "";
 	}
 	
 	/**
 	 * The piece to be removed, in case of a mill. Null if not specified.
-	 * @return A piece, or null.
+	 * @return List of pieces.
 	 */
-	public Piece getRemovePiece() {
-		return removePiece;
+	public List<Piece> getRemovePieces() {
+		return removePieces;
 	}
 
 	/**

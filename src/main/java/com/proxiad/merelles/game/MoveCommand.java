@@ -34,10 +34,10 @@ public class MoveCommand extends Command {
 		if (movedPiece == null 
 				|| !movedPiece.getColor().equals(player.getColor())
 				|| !board.isLocationFree(target)
-				|| !target.isAdjacent(movedPiece.getLocation())) {
+				|| !getTargetLocation().isAdjacent(movedPiece.getLocation())) {
 			throw new InvalidCommandException();
 		}
-
+		
 		board.movePiece(movedPiece, target);
 	}
 }
