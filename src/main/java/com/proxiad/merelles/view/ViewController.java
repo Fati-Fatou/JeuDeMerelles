@@ -26,11 +26,19 @@ public class ViewController implements BoardObserver {
 	}
 	
 	private void createBackground() {
+		entityModule.createRectangle()
+		.setFillColor(0xFFFFCC)
+		.setWidth(1920)
+		.setHeight(1080)
+		.setX(0)
+		.setY(0)
+		.setScale(1)
+		.setZIndex(-2);
 		entityModule.createSprite()
 		.setImage("board.png")
-		.setBaseWidth(1200)
-		.setBaseHeight(1200)
-		.setX(0)
+		.setBaseWidth(1080)
+		.setBaseHeight(1080)
+		.setX(420)
 		.setY(0)
 		.setScale(1)
 		.setAnchor(0)
