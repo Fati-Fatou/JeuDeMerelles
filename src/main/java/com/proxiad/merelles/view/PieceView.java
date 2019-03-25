@@ -12,8 +12,8 @@ public class PieceView implements PieceObserver {
 	static class CoordConverter {
 		private int dx;
 		private int dy;
-		private static final int centerX = 600;
-		private static final int centerY = 600;
+		private static final int centerX = 960;
+		private static final int centerY = 540;
 
 		CoordConverter(int dx, int dy) {
 			this.dx = dx;
@@ -32,7 +32,7 @@ public class PieceView implements PieceObserver {
 	private static Map<Integer, CoordConverter> converters;
 
 	static {
-		final int step = 182;
+		final int step = 164;
 
 		converters = new HashMap<>();
 		converters.put(0, new CoordConverter(-step, -step));
