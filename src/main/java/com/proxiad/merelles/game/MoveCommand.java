@@ -1,5 +1,7 @@
 package com.proxiad.merelles.game;
 
+import java.util.Collection;
+
 public class MoveCommand extends Command {
 
 	// The piece to be moved
@@ -9,12 +11,12 @@ public class MoveCommand extends Command {
 		this(piece, targetLocation, null, null);
 	}
 
-	public MoveCommand(Piece piece, Location targetLocation, Piece removePiece) {
-		this(piece, targetLocation, removePiece, null);
+	public MoveCommand(Piece piece, Location targetLocation, Collection<Piece> removePieces) {
+		this(piece, targetLocation, removePieces, null);
 	}
 	
-	public MoveCommand(Piece piece, Location targetLocation, Piece removePiece, String message) {
-		super(targetLocation, removePiece, message);
+	public MoveCommand(Piece piece, Location targetLocation, Collection<Piece> removePieces, String message) {
+		super(targetLocation, removePieces, message);
 		this.piece = piece;
 	}
 	

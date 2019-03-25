@@ -1,6 +1,7 @@
 package com.proxiad.merelles.game;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public abstract class Command {
@@ -13,15 +14,19 @@ public abstract class Command {
 		this(targetLocation, null, null);
 	}
 
-	protected Command(Location targetLocation, Piece removePiece) {
-		this(targetLocation, removePiece, null);
+	protected Command(Location targetLocation, Collection<Piece> removePieces) {
+		this(targetLocation, removePieces, null);
 	}
 
-	protected Command(Location targetLocation, Piece removePiece, String message) {
+	protected Command(Location targetLocation, Collection<Piece> removePieces, String message) {
 		this.targetLocation = targetLocation;
 		this.removePieces = new ArrayList<>();
-		if (removePiece != null) {
-			removePieces.add(removePiece);
+		if (removePieces != null) {
+			for (Piece piece : removePieces) {
+				if (piece != null) {
+					this.removePieces.add(piece);
+				}
+			}
 		}
 		this.message = message != null ? message.trim() : "";
 	}
