@@ -17,10 +17,10 @@ public class PieceObserverTests {
 
 	private Location initialLocation = new Location(2, 1);
 	private Location newLocation = new Location(1, 1);
-	private static final int INITIAL_X = 964;
-	private static final int INITIAL_Y = 236;
-	private static final int NEW_X = 600;
-	private static final int NEW_Y = 236;
+	private static final int INITIAL_X = 1288;
+	private static final int INITIAL_Y = 212;
+	private static final int NEW_X = 960;
+	private static final int NEW_Y = 212;
 	private Piece piece;
 	private PieceView view;
 	
