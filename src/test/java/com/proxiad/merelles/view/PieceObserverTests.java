@@ -1,18 +1,14 @@
 package com.proxiad.merelles.view;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
-import com.codingame.gameengine.module.entities.GraphicEntityModule;
 import com.proxiad.merelles.game.Location;
 import com.proxiad.merelles.game.Piece;
 import com.proxiad.merelles.game.PlayerColor;
@@ -21,57 +17,65 @@ public class PieceObserverTests {
 
 	private Location initialLocation = new Location(2, 1);
 	private Location newLocation = new Location(1, 1);
+	private static final int INITIAL_X = 964;
+	private static final int INITIAL_Y = 236;
+	private static final int NEW_X = 600;
+	private static final int NEW_Y = 236;
 	private Piece piece;
 	private PieceView view;
-	private PieceView viewSpy;
-	private GraphicEntityModule entityModule;
+	
+	@Mock
+	private EntitySprite sprite;
 	
 	@Before
 	public void setUp() throws Exception {
-		entityModule = mock(GraphicEntityModule.class);
+		MockitoAnnotations.initMocks(this);
 		
 		piece = new Piece(2, PlayerColor.BLACK, initialLocation);
-		view = new PieceView(entityModule, piece);		
-		viewSpy = spy(view);
-		doNothing().when(viewSpy).createSprite();
-		doNothing().when(viewSpy).hide();
-		doNothing().when(viewSpy).showAt(newLocation);
+		view = new PieceView(piece, sprite);		
 	}
 
 	@Test
 	public void testNoActivityNoUpdatesOnView() {
-		viewSpy.updateView();
-		verify(viewSpy).updateView();
-		verify(viewSpy).createSprite();
-		verify(viewSpy).showAt(initialLocation);
-		verifyNoMoreInteractions(viewSpy);
+		view.updateView();
+		
+		verify(sprite).setState(INITIAL_X, INITIAL_Y, SpriteVisibility.VISIBLE, 1.0);
+
+		verifyNoMoreInteractions(sprite);
 	}
 
 	@Test
-	@Ignore
 	public void testMovedPieceUpdatesView() {
-		viewSpy.updateView();
+		view.updateView();
+		
 		piece.move(newLocation);
 		assertEquals(newLocation, piece.getLocation());
 		
-		viewSpy.updateView();
-		verify(viewSpy, Mockito.times(2)).updateView();
-		verify(viewSpy, Mockito.times(2)).createSprite();
-		verify(viewSpy).showAt(initialLocation);
-		verify(viewSpy).showAt(newLocation);
+		view.updateView();
 		
-		verifyNoMoreInteractions(viewSpy);
+		// before move
+		verify(sprite).setState(INITIAL_X, INITIAL_Y, SpriteVisibility.VISIBLE, 1.0);
+
+		// after move
+		verify(sprite).setState(INITIAL_X, INITIAL_Y, SpriteVisibility.VISIBLE, 0.0);
+		verify(sprite).setState(NEW_X, NEW_Y, SpriteVisibility.VISIBLE, 1.0);
+		
+		verifyNoMoreInteractions(sprite);
 	}
 
 	@Test
-	@Ignore
 	public void testTakenPieceUpdatesView() {
-		viewSpy.updateView();
+		view.updateView();
+		
 		piece.take();
-		viewSpy.taken(piece);
-		viewSpy.updateView();
-		verify(viewSpy).showAt(initialLocation);
-		verify(viewSpy).hide();
-		verifyNoMoreInteractions(viewSpy);
+		
+		view.updateView();
+
+		// before move
+		verify(sprite).setState(INITIAL_X, INITIAL_Y, SpriteVisibility.VISIBLE, 1.0);
+
+		// after move
+		verify(sprite).setState(INITIAL_X, INITIAL_Y, SpriteVisibility.HIDDEN, 1.0);
+		verifyNoMoreInteractions(sprite);
 	}
 }
