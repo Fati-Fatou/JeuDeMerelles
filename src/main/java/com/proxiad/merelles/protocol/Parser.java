@@ -1,5 +1,9 @@
 package com.proxiad.merelles.protocol;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
 import com.proxiad.merelles.game.Board;
 import com.proxiad.merelles.game.Command;
 import com.proxiad.merelles.game.Location;
@@ -31,15 +35,24 @@ public abstract class Parser<C extends Command> {
 
 		int direction = parseInt(tokens, 1 + numberOfSpecificArguments, "DIRECTION");
 		int radius = parseInt(tokens, 2 + numberOfSpecificArguments, "RADIUS");
-		int removePieceId = parseInt(tokens, 3 + numberOfSpecificArguments, "REMOVE_PIECE_ID");
-		Piece removePiece = board.findPieceById(removePieceId);
+
+		List<Piece> removePieces = new ArrayList<Piece>(2);
+		for (int i = 3 + numberOfSpecificArguments; i < tokens.length; ++i) {
+			StringBuilder fieldName = new StringBuilder();
+			fieldName.append("REMOVE_PIECE_ID").append(Integer.toString(i + 1));
+			int removePieceId = parseInt(tokens, i, "REMOVE_PIECE_ID");
+			Piece removePiece = board.findPieceById(removePieceId);
+			if (removePiece != null) {
+				removePieces.add(removePiece);
+			}
+		}
 		Location targetLocation = new Location(direction, radius);
 
-		return parseCommandArguments(board, message, tokens, targetLocation, removePiece);
+		return parseCommandArguments(board, message, tokens, targetLocation, removePieces);
 	}
 
 	abstract protected C parseCommandArguments(Board board, String message, String[] tokens,
-			Location targetLocation, Piece removePiece) throws ParsingException;
+			Location targetLocation, Collection<Piece> removePieces) throws ParsingException;
 	
 	private static void checkKeyword(String[] tokens, int tokenIndex, String fieldName) throws ParsingException {
 		String token = retrieveToken(tokens, tokenIndex, fieldName);

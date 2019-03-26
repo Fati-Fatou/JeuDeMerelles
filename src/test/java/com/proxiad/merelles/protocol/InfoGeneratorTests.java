@@ -74,7 +74,7 @@ public class InfoGeneratorTests {
 	}
 
 	protected Predicate<String> moveTester(int direction, int radius) {
-		String coordinates = String.format(" %d %d 0", direction, radius);
+		String coordinates = String.format(" %d %d 0 0", direction, radius);
 		return input -> input.endsWith(coordinates);
 	}
 	
