@@ -12,6 +12,7 @@ public class RemovePieceTests {
 	
 	@Test
 	public void isOpponentPiece() {
+		//GIVEN
 		Board board = new Board();
 		PlayerData opponent = new PlayerData(board, PlayerColor.BLACK, 3);
 		board.putPiece(new Location(0,0), PlayerColor.BLACK);
@@ -21,14 +22,15 @@ public class RemovePieceTests {
 		board.putPiece(new Location(0,2), PlayerColor.WHITE);
 		board.putPiece(new Location(6,2), PlayerColor.WHITE);
 		board.putPiece(new Location(5,2), PlayerColor.WHITE);
-		
+		//WHEN
 		List<Piece> pieces = board.pieces().collect(Collectors.toList());
 		List<Piece> opponentPieces = new ArrayList<>();
 		for (Piece pieceOpponent : pieces) {
 			if (opponent.getColor().equals(pieceOpponent.getColor())) {
 				opponentPieces.add(pieceOpponent);
 			}		
-		}		
+		}	
+		//THEN
 		assertEquals(3, opponentPieces.size());		
 	}
 	
