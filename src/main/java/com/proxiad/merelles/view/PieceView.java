@@ -3,12 +3,9 @@ package com.proxiad.merelles.view;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.codingame.gameengine.module.entities.GraphicEntityModule;
-import com.codingame.gameengine.module.entities.Sprite;
 import com.proxiad.merelles.game.Location;
 import com.proxiad.merelles.game.Piece;
 import com.proxiad.merelles.game.Piece.PieceObserver;
-import com.proxiad.merelles.game.PlayerColor;
 
 public class PieceView implements PieceObserver {
 
@@ -24,11 +21,11 @@ public class PieceView implements PieceObserver {
 		}
 
 		int computeX(int radius) {
-			return centerX + (radius + 1)* dx;
+			return centerX + (radius + 1) * dx;
 		}
 
 		int computeY(int radius) {
-			return centerY + (radius +1)* dy;
+			return centerY + (radius + 1) * dy;
 		}
 	}
 
@@ -52,8 +49,7 @@ public class PieceView implements PieceObserver {
 		return converters.get(direction);
 	}
 
-	private GraphicEntityModule entityModule;
-	private Sprite sprite;
+	private EntitySprite sprite;
 	private int x;
 	private int y;
 	private boolean isVisible = false;
@@ -61,12 +57,13 @@ public class PieceView implements PieceObserver {
 	private boolean wasTaken = false;
 	private Piece piece;
 
-	public PieceView(GraphicEntityModule entityModule, Piece piece) {
-		this.entityModule = entityModule;
+	public PieceView(Piece piece,EntitySprite sprite) {
+		this.sprite = sprite;
 		this.piece = piece;
 		this.piece.addListener(this);
 		newLocation = piece.getLocation();
 	}
+
 	private void updateCoords(Location location) {
 		CoordConverter conv = converter(location.getDirection());
 		x = conv.computeX(location.getRadius());
@@ -84,10 +81,6 @@ public class PieceView implements PieceObserver {
 	}
 
 	public void updateView() {
-		if (sprite == null) {
-			createSprite();
-		}
-
 		if (newLocation != null && !wasTaken) {
 			showAt(newLocation);
 			newLocation = null;
@@ -98,44 +91,19 @@ public class PieceView implements PieceObserver {
 		}
 	}
 
-	public void createSprite() {
-		boolean isBlack = piece.getColor() == PlayerColor.BLACK;
-		sprite = entityModule.createSprite()
-				.setImage(isBlack ? "black.png" : "white.png")
-				.setX(x)
-				.setY(y)
-				.setBaseWidth(48)
-				.setBaseHeight(48)
-				.setAnchor(0.5)
-				.setZIndex(0)
-				.setVisible(false);
-	}
-
-	public void showAt(Location location) {
+	public void showAt(Location location) {		
 		if (isVisible) {
-			entityModule.commitEntityState(0, sprite);
+			sprite.setState(x, y, SpriteVisibility.VISIBLE, 0.0);
 		}
 
 		updateCoords(location);
-		if (sprite != null) {
-			sprite.setVisible(true)
-			.setAlpha(1.0)
-			.setX(x)
-			.setY(y);
-		}
+		sprite.setState(x, y, SpriteVisibility.VISIBLE, 1.0);
 		isVisible = true;
-		if (sprite != null) {
-			entityModule.commitEntityState(1.0, sprite);
-		}
 	}
 
 	public void hide() {
 		isVisible = false;
 
-		if (sprite != null) {
-			sprite.setAlpha(0.0)
-			.setVisible(false);
-			entityModule.commitEntityState(1.0, sprite);
-		}
+		sprite.setState(x, y, SpriteVisibility.HIDDEN, 1.0);
 	}
 }
