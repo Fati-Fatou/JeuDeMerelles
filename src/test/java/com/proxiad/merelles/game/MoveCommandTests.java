@@ -68,7 +68,7 @@ public class MoveCommandTests {
 		verify(blackPlayer, never()).updateCountsAfterPut();
 		verify(board, never()).putPiece(ArgumentMatchers.any(), ArgumentMatchers.any());
 		verify(board, never()).movePiece(ArgumentMatchers.any(), ArgumentMatchers.any());
-		
+			
 		if (exc != null) {
 			throw exc;
 		}
