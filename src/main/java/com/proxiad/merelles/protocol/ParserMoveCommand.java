@@ -1,5 +1,7 @@
 package com.proxiad.merelles.protocol;
 
+import java.util.Collection;
+
 import com.proxiad.merelles.game.Board;
 import com.proxiad.merelles.game.Location;
 import com.proxiad.merelles.game.MoveCommand;
@@ -13,7 +15,7 @@ public class ParserMoveCommand extends Parser<MoveCommand> {
 	
 	@Override
 	protected MoveCommand parseCommandArguments(Board board, String message, String[] tokens,
-			Location targetLocation, Piece removePiece) throws ParsingException {
+			Location targetLocation, Collection<Piece> removePieces) throws ParsingException {
 		
 		int pieceId = parseInt(tokens, 1, "PIECE_ID");
 		Piece piece = board.findPieceById(pieceId);
@@ -21,6 +23,6 @@ public class ParserMoveCommand extends Parser<MoveCommand> {
 			throw new ParsingException(formatUnknownPiece(pieceId));
 		}
 		
-		return new MoveCommand(piece, targetLocation, removePiece, message);
+		return new MoveCommand(piece, targetLocation, removePieces, message);
 	}
 }

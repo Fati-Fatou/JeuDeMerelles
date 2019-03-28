@@ -21,10 +21,10 @@ public abstract class ParsingAgent {
 			Pattern.compile("([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)");
 
 	private static final Pattern putCommandParser = 
-			Pattern.compile("PUT ([0-9]+) ([0-9]+) ([0-9]+)");
+			Pattern.compile("PUT ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)");
 
 	private static final Pattern moveCommandParser = 
-			Pattern.compile("MOVE ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)");
+			Pattern.compile("MOVE ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)");
 
 	private static PlayerColor parseColor(String text) {
 		return "BLACK".equals(text) ? PlayerColor.BLACK : PlayerColor.WHITE;
@@ -85,20 +85,18 @@ public abstract class ParsingAgent {
 				int id = Integer.parseInt(matcher.group(1));
 				int direction = Integer.parseInt(matcher.group(2));
 				int radius = Integer.parseInt(matcher.group(3));
-				int removePieceId = Integer.parseInt(matcher.group(4));
+				int removePieceId1 = Integer.parseInt(matcher.group(4));
+				int removePieceId2 = Integer.parseInt(matcher.group(5));
 				Predicate<Piece> isThisPiece = p -> p.getId() == id; 
 				Piece piece =
 						pieces.stream()
 						.filter(isThisPiece)
 						.findAny()
 						.orElse(new Piece(id, myColor, new Location(0, 0)));
-				Predicate<Piece> isThisRemovePiece = p -> p.getId() == removePieceId; 
-				Piece removePiece =
-						pieces.stream()
-						.filter(isThisRemovePiece)
-						.findAny()
-						.orElse(null);
-				moves.add(new MoveCommand(piece, new Location(direction, radius), removePiece, null));
+				List<Piece> removePieces = new ArrayList<>();
+				checkRemovePiece(removePieces, pieces, removePieceId1);
+				checkRemovePiece(removePieces, pieces, removePieceId2);
+				moves.add(new MoveCommand(piece, new Location(direction, radius), removePieces, null));
 			}
 			else {
 				// PUT
@@ -107,14 +105,12 @@ public abstract class ParsingAgent {
 
 				int direction = Integer.parseInt(matcher.group(1));
 				int radius = Integer.parseInt(matcher.group(2));
-				int removePieceId = Integer.parseInt(matcher.group(3));
-				Predicate<Piece> isThisRemovePiece = p -> p.getId() == removePieceId; 
-				Piece removePiece =
-						pieces.stream()
-						.filter(isThisRemovePiece)
-						.findAny()
-						.orElse(null);
-				puts.add(new PutCommand(new Location(direction, radius), removePiece, null));
+				int removePieceId1 = Integer.parseInt(matcher.group(3));
+				int removePieceId2 = Integer.parseInt(matcher.group(4));
+				List<Piece> removePieces = new ArrayList<>();
+				checkRemovePiece(removePieces, pieces, removePieceId1);
+				checkRemovePiece(removePieces, pieces, removePieceId2);
+				puts.add(new PutCommand(new Location(direction, radius), removePieces, null));
 			}
 		}
 
@@ -124,6 +120,18 @@ public abstract class ParsingAgent {
 						opponentsPieces, opponentsStock);
 		GameDesc game = new GameDesc(pieces, puts, moves, turnsLeft, me, opponent);
 		return game;
+	}
+
+	private void checkRemovePiece(List<Piece> removePieces, List<Piece> pieces, int removePieceId1) {
+		Predicate<Piece> isThisRemovePiece = p -> p.getId() == removePieceId1; 
+		Piece removePiece =
+				pieces.stream()
+				.filter(isThisRemovePiece)
+				.findAny()
+				.orElse(null);
+		if (removePiece != null) {
+			removePieces.add(removePiece);
+		}
 	}
 
 	protected abstract PutCommand playPut(GameDesc game);

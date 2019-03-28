@@ -1,17 +1,19 @@
 package com.proxiad.merelles.game;
 
+import java.util.Collection;
+
 public class PutCommand extends Command {
 
 	public PutCommand(Location targetLocation) {
 		this(targetLocation, null, null);
 	}
 
-	public PutCommand(Location targetLocation, Piece removePiece) {
-		this(targetLocation, removePiece, null);
+	public PutCommand(Location targetLocation, Collection<Piece> removePieces) {
+		this(targetLocation, removePieces, null);
 	}
 	
-	public PutCommand(Location targetLocation, Piece removePiece, String message) {
-		super(targetLocation, removePiece, message);
+	public PutCommand(Location targetLocation, Collection<Piece> removePieces, String message) {
+		super(targetLocation, removePieces, message);
 	}
 	
 	@Override
