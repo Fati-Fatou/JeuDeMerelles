@@ -193,6 +193,10 @@ public class Board {
 	}
 	
 	public void removePiece(int pieceId) {
+		Piece piece = knownPieces.remove(pieceId);
 		
+		if (piece != null) {
+			piece.take();
+		}
 	}
 }
