@@ -26,6 +26,21 @@ public class Board {
 		}
 		
 		public Mill detect() {
+			Map<Integer, Piece> constituents = extractContents();
+			
+			if (constituents == null) {
+				return null;
+			}
+			
+			Set<Integer> constituentsKeys = constituents.keySet();
+			if (isAlreadySeen(constituentsKeys)) {
+				return null;
+			}
+			alreadySeen.add(constituentsKeys);
+			return new Mill(constituents.values());
+		}
+
+		private Map<Integer, Piece> extractContents() {
 			Optional<PlayerColor> color = Optional.empty();
 			Map<Integer, Piece> constituents = new HashMap<>();
 			
@@ -51,15 +66,13 @@ public class Board {
 				}
 				constituents.put(actualPiece.getId(), actualPiece);
 			}
-			
-			Set<Integer> constituentsKeys = constituents.keySet();
-			if (isAlreadySeen(constituentsKeys)) {
-				return null;
-			}
-			alreadySeen.add(constituentsKeys);
-			return new Mill(constituents.values());
+			return constituents;
 		}
 
+		public boolean isActiveAndContains(Location location) {
+			return locations.contains(location) && extractContents() != null;
+		}
+		
 		private boolean isAlreadySeen(Set<Integer> constituents) {
 			return alreadySeen.stream().anyMatch(seen -> {
 				for (Integer pieceId : constituents) {
@@ -167,7 +180,8 @@ public class Board {
 	}
 	
 	public boolean isInMill(Piece piece) {
-		return findMills().stream().anyMatch(mill -> mill.containsPiece(piece.getId()));
+		return millsDetectors.stream()
+				.anyMatch(mill -> mill.isActiveAndContains(piece.getLocation()));
 	}
 
 	public List<Integer> selectRemovablePieces(int numberOfPieces, List<Piece> removePieces, PlayerColor opponentsColor) {

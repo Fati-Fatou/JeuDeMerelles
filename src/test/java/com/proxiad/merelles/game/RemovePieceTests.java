@@ -130,5 +130,22 @@ public class RemovePieceTests {
 
 		assertTrue(removePiecesIds.contains(Integer.valueOf(goodHintId)));
 		assertTrue(removePiecesIds.contains(Integer.valueOf(notAHintGoodId)));
-	}	
+	}
+	
+	@Test
+	public void testNewMillsDetectionAndRemovableDoNotInteract() {
+		// Given a mill
+		int id = board.putPiece(new Location(7,2), OPPONENTS_COLOR);
+		board.putPiece(new Location(7,1), OPPONENTS_COLOR);
+		board.putPiece(new Location(7,0), OPPONENTS_COLOR);
+
+		// when new mills detection is called
+		board.findMills();
+		
+		// the mill still prevents its peices to be removed.
+		Piece piece = board.findPieceById(id);
+		
+		boolean removable = board.isRemovable(piece, OPPONENTS_COLOR);
+		assertFalse(removable);
+	}
 }
