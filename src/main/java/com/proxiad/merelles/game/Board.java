@@ -191,4 +191,8 @@ public class Board {
 				.limit(numberOfPieces)
 				.collect(Collectors.toList());
 	}
+	
+	public void removePiece(int pieceId) {
+		
+	}
 }
