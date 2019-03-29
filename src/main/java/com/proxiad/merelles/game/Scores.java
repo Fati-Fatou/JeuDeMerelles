@@ -19,6 +19,10 @@ public class Scores {
 		this.isGameOver = isGameOver;
 	}
 	
+	public int scoreForPlayer(PlayerColor color) {
+		return color == PlayerColor.BLACK ? scoreOfBlackPlayer() : scoreOfWhitePlayer();
+	}
+	
 	public int scoreOfBlackPlayer() {
 		return blackScore;
 	}

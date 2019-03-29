@@ -51,4 +51,8 @@ public class PlayerData {
 				.filter(piece -> color.equals(piece.getColor()))
 				.collect(Collectors.toList());
 	}
+	
+	public int score() {
+		return getPiecesOnBoard() + getPiecesInStock();
+	}
 }
