@@ -28,7 +28,7 @@ public class Board {
 		
 		public Mill detect() {
 			Optional<PlayerColor> color = Optional.empty();
-			Set<Integer> constituents = new HashSet<>();
+			Map<Integer, Piece> constituents = new HashMap<>();
 			
 			for (int i = 0; i < locations.size(); ++i) {
 				Optional<Piece> piece = findByLocation(locations.get(i));
@@ -50,14 +50,15 @@ public class Board {
 					// first slot: save the color of the mill
 					color = Optional.of(actualPiece.getColor());
 				}
-				constituents.add(actualPiece.getId());
+				constituents.put(actualPiece.getId(), actualPiece);
 			}
 			
-			if (isAlreadySeen(constituents)) {
+			Set<Integer> constituentsKeys = constituents.keySet();
+			if (isAlreadySeen(constituentsKeys)) {
 				return null;
 			}
-			alreadySeen.add(constituents);
-			return new Mill();
+			alreadySeen.add(constituentsKeys);
+			return new Mill(constituents.values());
 		}
 
 		private boolean isAlreadySeen(Set<Integer> constituents) {
