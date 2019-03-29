@@ -2,7 +2,6 @@ package com.proxiad.merelles.game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -158,6 +157,24 @@ public class Board {
 		return millsDetectors.stream()
 				.map(MillDetector::detect)
 				.filter(mill -> mill != null)
+				.collect(Collectors.toList());
+	}
+
+	public boolean isRemovable(Piece piece, PlayerColor opponentsColor) {
+		return piece != null && 
+				piece.getColor() == opponentsColor && 
+				!isInMill(piece);
+	}
+	
+	public boolean isInMill(Piece piece) {
+		return findMills().stream().anyMatch(mill -> mill.containsPiece(piece.getId()));
+	}
+
+	public List<Integer> selectRemovablePieces(int numberOfPieces, List<Piece> removePieces, PlayerColor opponentsColor) {
+		return Stream.concat(removePieces.stream(), pieces())
+				.filter(piece -> isRemovable(piece, opponentsColor))
+				.map(piece -> piece.getId())
+				.limit(numberOfPieces)
 				.collect(Collectors.toList());
 	}
 }

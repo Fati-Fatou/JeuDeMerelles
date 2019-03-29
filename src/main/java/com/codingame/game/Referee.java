@@ -8,14 +8,10 @@ import com.codingame.gameengine.module.entities.GraphicEntityModule;
 import com.google.inject.Inject;
 import com.proxiad.merelles.game.Board;
 import com.proxiad.merelles.game.InvalidCommandException;
-import com.proxiad.merelles.game.MoveCommand;
 import com.proxiad.merelles.game.Phase;
 import com.proxiad.merelles.game.PlayerColor;
 import com.proxiad.merelles.game.PlayerData;
-import com.proxiad.merelles.game.PutCommand;
 import com.proxiad.merelles.protocol.InfoGenerator;
-import com.proxiad.merelles.protocol.ParserMoveCommand;
-import com.proxiad.merelles.protocol.ParserPutCommand;
 import com.proxiad.merelles.protocol.ParsingException;
 import com.proxiad.merelles.view.ViewController;
 

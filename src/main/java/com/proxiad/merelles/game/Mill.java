@@ -15,4 +15,8 @@ public class Mill {
 	public List<Piece> pieces() {
 		return piecesInMill;
 	}
+	
+	public boolean containsPiece(int pieceId) {
+		return piecesInMill.stream().anyMatch(piece -> piece.getId() == pieceId);
+	}
 }
