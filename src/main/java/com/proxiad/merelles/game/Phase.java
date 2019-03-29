@@ -20,6 +20,7 @@ public abstract class Phase {
 		
 		for (Integer removedPieceId : removals) {
 			board.removePiece(removedPieceId);
+			player.getOpponent().updateCountsAfterPieceTaken();
 		}
 	}
 	

@@ -196,6 +196,9 @@ public class Board {
 		Piece piece = knownPieces.remove(pieceId);
 		
 		if (piece != null) {
+			
+			observers.forEach(observer -> observer.pieceTaken(piece));
+			
 			piece.take();
 		}
 	}

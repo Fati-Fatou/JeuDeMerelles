@@ -41,6 +41,10 @@ public class PlayerData {
 		++piecesOnBoard;
 		--piecesInStock;		
 	}
+	
+	public void updateCountsAfterPieceTaken() {
+		--piecesOnBoard;
+	}
 
 	public Phase getPhase() {	
 		return getPiecesInStock() > 0 ? new PlacementPhase() : new MovementPhase(this);

@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -42,6 +43,7 @@ public class MillsRemovalsTests {
 	@Spy
 	private Board board = new Board();
 	private PlayerData player;
+	private PlayerData opponent;
 	private String commandText = "HELLO";
 	
 	@Mock
@@ -66,7 +68,7 @@ public class MillsRemovalsTests {
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		player = new PlayerData(board, PlayerColor.BLACK, 9);
-		PlayerData opponent = new PlayerData(board, PlayerColor.WHITE, 9);
+		opponent = new PlayerData(board, PlayerColor.WHITE, 9);
 		player.setOpponent(opponent);
 	}
 
@@ -80,6 +82,7 @@ public class MillsRemovalsTests {
 		
 		phase.parseAndRunCommand(commandText, board, player);
 
+		assertEquals(9, opponent.getPiecesInStock() + opponent.getPiecesOnBoard());
 		verify(board, never()).removePiece(any(Integer.class));
 	}
 
@@ -117,6 +120,7 @@ public class MillsRemovalsTests {
 
 		phase.parseAndRunCommand(commandText, board, player);
 		
+		assertEquals(8, opponent.getPiecesInStock() + opponent.getPiecesOnBoard());
 		verify(board).removePiece(42);
 	}
 
@@ -134,6 +138,7 @@ public class MillsRemovalsTests {
 
 		phase.parseAndRunCommand(commandText, board, player);
 
+		assertEquals(7, opponent.getPiecesInStock() + opponent.getPiecesOnBoard());
 		verify(board).removePiece(42);
 		verify(board).removePiece(24);
 	}
