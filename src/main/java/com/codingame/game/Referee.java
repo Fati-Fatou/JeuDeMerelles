@@ -85,8 +85,9 @@ public class Referee extends AbstractReferee {
 		}
 
 		// TODO end of game
-		//if (player.getData().getPiecesInStock() == 0 && player.getData().getOpponent().getPiecesInStock() == 0) {
-		if (turn > 300) {
+		if (turn > 300 || 
+				player.getData().getPiecesInStock() == 0 && 
+				player.getData().getOpponent().getPiecesInStock() == 0) {
 			gameManager.endGame();
 		}
 	}
