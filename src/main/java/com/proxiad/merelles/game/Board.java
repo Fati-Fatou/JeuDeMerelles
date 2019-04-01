@@ -2,7 +2,6 @@ package com.proxiad.merelles.game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -27,8 +26,23 @@ public class Board {
 		}
 		
 		public Mill detect() {
+			Map<Integer, Piece> constituents = extractContents();
+			
+			if (constituents == null) {
+				return null;
+			}
+			
+			Set<Integer> constituentsKeys = constituents.keySet();
+			if (isAlreadySeen(constituentsKeys)) {
+				return null;
+			}
+			alreadySeen.add(constituentsKeys);
+			return new Mill(constituents.values());
+		}
+
+		private Map<Integer, Piece> extractContents() {
 			Optional<PlayerColor> color = Optional.empty();
-			Set<Integer> constituents = new HashSet<>();
+			Map<Integer, Piece> constituents = new HashMap<>();
 			
 			for (int i = 0; i < locations.size(); ++i) {
 				Optional<Piece> piece = findByLocation(locations.get(i));
@@ -50,16 +64,15 @@ public class Board {
 					// first slot: save the color of the mill
 					color = Optional.of(actualPiece.getColor());
 				}
-				constituents.add(actualPiece.getId());
+				constituents.put(actualPiece.getId(), actualPiece);
 			}
-			
-			if (isAlreadySeen(constituents)) {
-				return null;
-			}
-			alreadySeen.add(constituents);
-			return new Mill();
+			return constituents;
 		}
 
+		public boolean isActiveAndContains(Location location) {
+			return locations.contains(location) && extractContents() != null;
+		}
+		
 		private boolean isAlreadySeen(Set<Integer> constituents) {
 			return alreadySeen.stream().anyMatch(seen -> {
 				for (Integer pieceId : constituents) {
@@ -158,5 +171,35 @@ public class Board {
 				.map(MillDetector::detect)
 				.filter(mill -> mill != null)
 				.collect(Collectors.toList());
+	}
+
+	public boolean isRemovable(Piece piece, PlayerColor opponentsColor) {
+		return piece != null && 
+				piece.getColor() == opponentsColor && 
+				!isInMill(piece);
+	}
+	
+	public boolean isInMill(Piece piece) {
+		return millsDetectors.stream()
+				.anyMatch(mill -> mill.isActiveAndContains(piece.getLocation()));
+	}
+
+	public List<Integer> selectRemovablePieces(int numberOfPieces, List<Piece> removePieces, PlayerColor opponentsColor) {
+		return Stream.concat(removePieces.stream(), pieces())
+				.filter(piece -> isRemovable(piece, opponentsColor))
+				.map(piece -> piece.getId())
+				.limit(numberOfPieces)
+				.collect(Collectors.toList());
+	}
+	
+	public void removePiece(int pieceId) {
+		Piece piece = knownPieces.remove(pieceId);
+		
+		if (piece != null) {
+			
+			observers.forEach(observer -> observer.pieceTaken(piece));
+			
+			piece.take();
+		}
 	}
 }

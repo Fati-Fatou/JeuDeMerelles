@@ -34,7 +34,7 @@ public class PhaseTests {
 	private String commandText = "HELLO";
 	
 	@Spy
-	private CommandForTests command;
+	private CommandForTests command = new CommandForTests();
 	
 	@Mock
 	private Parser<Command> parser;
@@ -58,6 +58,8 @@ public class PhaseTests {
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
 		player = new PlayerData(board, PlayerColor.BLACK, 9);
+		PlayerData opponent = new PlayerData(board, PlayerColor.WHITE, 9);
+		player.setOpponent(opponent);
 	}
 
 	@Test

@@ -64,7 +64,7 @@ public class ParserMoveCommandTests {
 	@Test
 	public void testMoveUnknownPiece() {
 		// MOVE MOVE_PIECE_ID TO_A TO_R REMOVE_PIECE_ID TEXT
-		String textFromPlayer = "MOVE 25 3 2 0 Foobar";
+		String textFromPlayer = "MOVE 25 3 2 0 ; Foobar";
 		when(board.findPieceById(25)).thenReturn(null);
 		ParsingException exception = null;
 		try {

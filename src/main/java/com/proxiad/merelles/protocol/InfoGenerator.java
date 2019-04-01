@@ -71,7 +71,7 @@ public class InfoGenerator implements CommandFormatter {
 		// Suggest to move this piece.
 		// No suggestion for the piece to remove in case of mill, hence 0 as last argument.
 		return String.format(
-				"PUT %d %d 0", 
+				"PUT %d %d 0 0", 
 				location.getDirection(), 
 				location.getRadius());
 	}
@@ -82,7 +82,7 @@ public class InfoGenerator implements CommandFormatter {
 		// Suggest to move this piece.
 		// No suggestion for the piece to remove in case of mill, hence 0 as last argument.
 		return String.format(
-				"MOVE %d %d %d 0", 
+				"MOVE %d %d %d 0 0", 
 				command.getMovedPiece().getId(), 
 				location.getDirection(), 
 				location.getRadius());
