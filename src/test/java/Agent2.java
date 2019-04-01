@@ -3,7 +3,7 @@ import java.util.Scanner;
 public class Agent2 {
 
 	public static void main(String[] args) {
-		FirstMoveAgent agent = new FirstMoveAgent();
+		ParsingAgent agent = new RandomAgent();
 		
 		Scanner scanner = new Scanner(System.in);
 

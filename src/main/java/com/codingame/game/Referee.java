@@ -11,14 +11,16 @@ import com.proxiad.merelles.game.InvalidCommandException;
 import com.proxiad.merelles.game.Phase;
 import com.proxiad.merelles.game.PlayerColor;
 import com.proxiad.merelles.game.PlayerData;
+import com.proxiad.merelles.game.Scores;
 import com.proxiad.merelles.protocol.InfoGenerator;
 import com.proxiad.merelles.protocol.ParsingException;
+import com.proxiad.merelles.view.PlayerView;
 import com.proxiad.merelles.view.ViewController;
 
 public class Referee extends AbstractReferee {
-	
+
 	private static final int numberOfPiecesPerPlayer = 9;
-	
+
 	// Uncomment the line below and comment the line under it to create a Solo Game
 	// @Inject private SoloGameManager<Player> gameManager;
 	@Inject private MultiplayerGameManager<Player> gameManager;
@@ -31,36 +33,50 @@ public class Referee extends AbstractReferee {
 	public void init() {
 		// Initialize your game here.
 		board = new Board();
-		view = new ViewController(graphicEntityModule, board);
-		
+
 		PlayerData blackPlayer = new PlayerData(board, PlayerColor.BLACK, numberOfPiecesPerPlayer);
 		PlayerData whitePlayer = new PlayerData(board, PlayerColor.WHITE, numberOfPiecesPerPlayer);
 		blackPlayer.setOpponent(whitePlayer);
 		whitePlayer.setOpponent(blackPlayer);
 
+		PlayerView blackPlayerView = null;
+		PlayerView whitePlayerView = null;
+
 		boolean firstPlayer = true;
 		for (Player player : gameManager.getActivePlayers()) {
 			if (firstPlayer) {
 				player.setData(blackPlayer);
+				blackPlayerView = new PlayerView(graphicEntityModule, player);
 				firstPlayer = false;
 			}
 			else {
 				player.setData(whitePlayer);
+				whitePlayerView = new PlayerView(graphicEntityModule, player);
 			}
 		}
-		view.update();
+
+		view = new ViewController(graphicEntityModule, board, blackPlayerView, whitePlayerView);
+		view.update(new Scores(PlayerColor.BLACK, numberOfPiecesPerPlayer, numberOfPiecesPerPlayer, false));
 	}
 
 	@Override
 	public void gameTurn(int turn) {
 		Player player = gameManager.getPlayer(turn % gameManager.getPlayerCount());
 
-		gameTurnForPlayer(turn, player);
+		Scores scores = gameTurnForPlayer(turn, player);
 
-		view.update();
+		for (Player scoredPlayer : gameManager.getPlayers()) {
+			scoredPlayer.setScore(scores.scoreForPlayer(scoredPlayer.getData().getColor()));
+		}
+
+		if (scores.gameOver()) {
+			gameManager.endGame();
+		}
+
+		view.update(scores);
 	}
 
-	private void gameTurnForPlayer(int turn, Player player) {
+	private Scores gameTurnForPlayer(int turn, Player player) {
 		InfoGenerator generator = new InfoGenerator();
 		generator.gameInfoForPlayer(board, player).forEach(player::sendInputLine);
 		player.execute();
@@ -71,7 +87,7 @@ public class Referee extends AbstractReferee {
 
 			Phase phase = player.getData().getPhase();
 			phase.parseAndRunCommand(outputs.get(0), board, player.getData());
-			
+
 		} catch (TimeoutException e) {
 			player.deactivate(prependNickname("timeout!", player));
 		} catch (ParsingException e) {
@@ -84,13 +100,17 @@ public class Referee extends AbstractReferee {
 			e.printStackTrace();
 		}
 
-		// TODO end of game
-		//if (player.getData().getPiecesInStock() == 0 && player.getData().getOpponent().getPiecesInStock() == 0) {
-		if (turn > 300) {
-			gameManager.endGame();
-		}
+		return computeScores(turn, player.getData());
 	}
-	
+
+	public Scores computeScores(int turn, PlayerData player) {
+		// TODO end of game
+		boolean isGameOver = turn > 300 || 
+				player.getPiecesInStock() == 0 && player.getPiecesOnBoard() <= 2 || 
+				player.getOpponent().getPiecesInStock() == 0 && player.getPiecesOnBoard() <= 2;
+		return new Scores(player.getColor(), player.score(), player.getOpponent().score(), isGameOver);
+	}
+
 	private String prependNickname(String message, Player player) {
 		StringBuilder builder = new StringBuilder();
 		builder.append(player.getNicknameToken());
