@@ -88,8 +88,6 @@ public class Board {
 	private int nextId = 1;
 	private Map<Integer, Piece> knownPieces = new HashMap<>();
 	
-	private int turnsLeft = 200;
-	
 	private List<BoardObserver> observers = new ArrayList<>();
 	private List<MillDetector> millsDetectors;
 	
@@ -148,10 +146,6 @@ public class Board {
 	
 	public void movePiece(Piece piece, Location targetLocation) throws InvalidCommandException {
 		piece.move(targetLocation);
-	}
-
-	public int getTurnsLeft() {
-		return turnsLeft;
 	}
 	
 	public Optional<Piece> findByLocation(Location location) {

@@ -18,11 +18,11 @@ import com.proxiad.merelles.game.PutCommand;
 
 public class InfoGenerator implements CommandFormatter {
 
-	public Stream<String> gameInfoForPlayer(Board board, Player player) {
-		List<String> infos = new ArrayList<String>(30);
+	public Stream<String> gameInfoForPlayer(Board board, Player player, int turnsLeft) {
+		List<String> infos = new ArrayList<>(30);
 
 		// General info
-		infos.add(infoLine(board, player));
+		infos.add(infoLine(board, player, turnsLeft));
 		
 		// Pieces on the board
 		List<String> piecesInfos =
@@ -43,7 +43,7 @@ public class InfoGenerator implements CommandFormatter {
 		return infos.stream();
 	}
 	
-	public String infoLine(Board board, Player player) {
+	public String infoLine(Board board, Player player, int turnsLeft) {
 		int myPieces = player.getData().getPiecesOnBoard();
 		int opponentsPieces = player.getData().getOpponent().getPiecesOnBoard();
 		int myStock = player.getData().getPiecesInStock();
@@ -51,7 +51,7 @@ public class InfoGenerator implements CommandFormatter {
 		
 		return String.format("%s %d %d %d %d %d",
 					player.getData().getColor() == PlayerColor.BLACK ? "BLACK" : "WHITE",
-					board.getTurnsLeft(),
+					turnsLeft,
 					myPieces, opponentsPieces, myStock, opponentsStock);
 	}
 	

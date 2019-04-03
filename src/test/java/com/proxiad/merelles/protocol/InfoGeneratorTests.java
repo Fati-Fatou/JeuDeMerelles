@@ -37,20 +37,18 @@ public class InfoGeneratorTests {
 	
 	private Board board;
 	private Player whitePlayer;
-	private Player blackPlayer;
 	private InfoGenerator generator;
 	
 	@Before
 	public void setUp() throws Exception {
 		board = new Board();
 		whitePlayer = new ControlledColorPlayer(PlayerColor.WHITE);
-		blackPlayer = new ControlledColorPlayer(PlayerColor.BLACK);
 		generator = new InfoGenerator();
 	}
 
 	@Test
 	public void testEmptyBoardInfo() {
-		List<String> blackInfos = generator.gameInfoForPlayer(board, whitePlayer).collect(Collectors.toList());
+		List<String> blackInfos = generator.gameInfoForPlayer(board, whitePlayer, 200).collect(Collectors.toList());
 
 		// Info line,
 		// nb pieces = 0 (empty board)
@@ -85,7 +83,7 @@ public class InfoGeneratorTests {
 		whitePlayer.getData().getOpponent().updateCountsAfterPut();
 		
 		// what does white player receive?
-		List<String> whiteInfos = generator.gameInfoForPlayer(board, whitePlayer).collect(Collectors.toList());
+		List<String> whiteInfos = generator.gameInfoForPlayer(board, whitePlayer, 108).collect(Collectors.toList());
 
 		// Info line,
 		// nb pieces = 1
@@ -94,7 +92,7 @@ public class InfoGeneratorTests {
 		// one line per slot
 		assertEquals(4 + 23, whiteInfos.size());
 
-		assertEquals("WHITE 200 0 1 9 8", whiteInfos.get(0));
+		assertEquals("WHITE 108 0 1 9 8", whiteInfos.get(0));
 		
 		// 1 piece on the board
 		assertEquals("1", whiteInfos.get(1));

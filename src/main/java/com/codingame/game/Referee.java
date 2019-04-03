@@ -1,26 +1,21 @@
 package com.codingame.game;
-import java.util.List;
-
-import com.codingame.gameengine.core.AbstractPlayer.TimeoutException;
 import com.codingame.gameengine.core.AbstractReferee;
 import com.codingame.gameengine.core.MultiplayerGameManager;
 import com.codingame.gameengine.module.entities.GraphicEntityModule;
 import com.google.inject.Inject;
 import com.proxiad.merelles.game.Board;
-import com.proxiad.merelles.game.InvalidCommandException;
-import com.proxiad.merelles.game.Phase;
 import com.proxiad.merelles.game.PlayerColor;
 import com.proxiad.merelles.game.PlayerData;
 import com.proxiad.merelles.game.Scores;
-import com.proxiad.merelles.protocol.InfoGenerator;
-import com.proxiad.merelles.protocol.ParsingException;
 import com.proxiad.merelles.view.PlayerView;
 import com.proxiad.merelles.view.ViewController;
 
 public class Referee extends AbstractReferee {
 
-	private static final int numberOfPiecesPerPlayer = 9;
+	public static final int NUMBER_OF_TURNS_PER_PLAYER = 200;
 
+	private static final int numberOfPiecesPerPlayer = 9;
+	
 	// Uncomment the line below and comment the line under it to create a Solo Game
 	// @Inject private SoloGameManager<Player> gameManager;
 	@Inject private MultiplayerGameManager<Player> gameManager;
@@ -29,6 +24,25 @@ public class Referee extends AbstractReferee {
 	private ViewController view;
 	private Board board;
 
+	private int turnsLeft = 2 * NUMBER_OF_TURNS_PER_PLAYER;
+	
+	/**
+	 * Number of game turns left. This is the sum of the number of turns left for each player.
+	 * @return Number of game turns left.
+	 */
+	public int getTurnsLeft() {
+		return turnsLeft;
+	}
+
+	/**
+	 * Number of game turns a player still has to play.
+	 * @return Number of turns left for the player.
+	 */
+	public int getTurnsLeftForPlayer() {
+		// rounds up. Turns left 2 and 1 = last turn for both players (hence return 1). 
+		return (1 + turnsLeft) / 2;
+	}
+	
 	@Override
 	public void init() {
 		// Initialize your game here.
@@ -63,7 +77,11 @@ public class Referee extends AbstractReferee {
 	public void gameTurn(int turn) {
 		Player player = gameManager.getPlayer(turn % gameManager.getPlayerCount());
 
-		Scores scores = gameTurnForPlayer(turn, player);
+		player.play(getTurnsLeftForPlayer(), board);
+
+		--turnsLeft;
+		
+		Scores scores = computeScores(turn, player.getData());
 
 		for (Player scoredPlayer : gameManager.getPlayers()) {
 			scoredPlayer.setScore(scores.scoreForPlayer(scoredPlayer.getData().getColor()));
@@ -76,46 +94,11 @@ public class Referee extends AbstractReferee {
 		view.update(scores);
 	}
 
-	private Scores gameTurnForPlayer(int turn, Player player) {
-		InfoGenerator generator = new InfoGenerator();
-		generator.gameInfoForPlayer(board, player).forEach(player::sendInputLine);
-		player.execute();
-
-		try {
-			List<String> outputs = player.getOutputs();
-			// Check validity of the player output and compute the new game state
-
-			Phase phase = player.getData().getPhase();
-			phase.parseAndRunCommand(outputs.get(0), board, player.getData());
-
-		} catch (TimeoutException e) {
-			player.deactivate(prependNickname("timeout!", player));
-		} catch (ParsingException e) {
-			player.deactivate(prependNickname("unrecognized command!", player));
-			e.printStackTrace();
-		} catch (InvalidCommandException e) {
-			player.deactivate(prependNickname(e.getMessage(), player));
-		} catch (Exception e) {
-			player.deactivate(prependNickname(e.getMessage(), player));
-			e.printStackTrace();
-		}
-
-		return computeScores(turn, player.getData());
-	}
-
 	public Scores computeScores(int turn, PlayerData player) {
 		// TODO end of game
-		boolean isGameOver = turn > 300 || 
+		boolean isGameOver = turnsLeft <= 0 || 
 				player.getPiecesInStock() == 0 && player.getPiecesOnBoard() <= 2 || 
 				player.getOpponent().getPiecesInStock() == 0 && player.getPiecesOnBoard() <= 2;
 		return new Scores(player.getColor(), player.score(), player.getOpponent().score(), isGameOver);
-	}
-
-	private String prependNickname(String message, Player player) {
-		StringBuilder builder = new StringBuilder();
-		builder.append(player.getNicknameToken());
-		builder.append(' ');
-		builder.append(message);
-		return builder.toString();
 	}
 }
