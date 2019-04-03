@@ -19,7 +19,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import com.proxiad.merelles.protocol.ParserMoveCommand;
+import com.proxiad.merelles.protocol.ParserMoveOrJumpCommand;
 
 public class JumpPhaseTests {
 
@@ -43,9 +43,9 @@ public class JumpPhaseTests {
 	}
 	
 	@Test
-	public void testParserIsForMoveOnly() {
+	public void testParserIsForMoveOrJump() {
 		MockedJumpPhase phase = new MockedJumpPhase();
-		assertTrue(phase.parserType().isAssignableFrom(ParserMoveCommand.class));
+		assertTrue(phase.parserType().isAssignableFrom(ParserMoveOrJumpCommand.class));
 	}
 	
 	@Test
