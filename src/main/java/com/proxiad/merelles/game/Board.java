@@ -179,11 +179,22 @@ public class Board {
 	}
 
 	public List<Integer> selectRemovablePieces(int numberOfPieces, List<Piece> removePieces, PlayerColor opponentsColor) {
-		return Stream.concat(removePieces.stream(), pieces())
+		List<Integer> outOfMillsRemovable = 
+			Stream.concat(removePieces.stream(), pieces())
 				.filter(piece -> isRemovable(piece, opponentsColor))
 				.map(piece -> piece.getId())
 				.limit(numberOfPieces)
 				.collect(Collectors.toList());
+		
+		// If no piece out of mills, then you may remove pieces from the mills
+		if (outOfMillsRemovable.isEmpty()) {
+			return Stream.concat(removePieces.stream(), pieces())
+					.filter(piece -> piece != null && piece.getColor() == opponentsColor)
+					.map(piece -> piece.getId())
+					.limit(numberOfPieces)
+					.collect(Collectors.toList());
+		}
+		return outOfMillsRemovable;
 	}
 	
 	public void removePiece(int pieceId) {
