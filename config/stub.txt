@@ -1,0 +1,30 @@
+gameloop
+read myColor:word(5) turnsLeft:int myPieces:int opponentsPieces:int myStock:int opponentsStock:int
+read numPieces:int
+loop numPieces
+    read pieceId:int ownerId:int pieceDirection:int pieceRadius:int
+read numOptions:int
+loop numOptions
+    read commandText:word(16)
+write MOVE 18 3 1 0 0
+
+INPUT
+myColor: your color, BLACK (first player) or WHITE (second player)
+turnsLeft: the number of turns before game over (starts at 200)
+myPieces: the number of your pieces on the board, which is also your score
+opponentsPieces: the number of your opponent's pieces on the board (his/her score)
+myStock: the number of pieces you still have to put on the board (0 after the placement phase)
+opponentsStock: the number of pieces your opponent still has to put on the board
+numPieces: the total number of pieces on the board
+pieceId: the unique ID of the piece (white and black pieces do not share IDs)
+ownerId: 0 for of piece of mines, 1 for a piece of the opponent
+pieceDirection: 0 to 7, the radial direction where the piece is. 0 top left, 1 top, and so on clockwise.
+pieceRadius: 0 to 1, the radius from the center of the location of the piece. 0 innermost, 1 middle, 2 outermost.
+numOptions: the total number of suggested moves. At least 1.
+commandText: a valid output line. All possible outputs are listed, but the jumps. The jumps are listed only if no other move is possible.
+
+STATEMENT
+Make mills to remove your opponent's pieces!
+
+OUTPUT
+PUT <direction> <radius> <remove1> <remove2> | MOVE <pieceId> <direction> <radius> <remove1> <remove2>

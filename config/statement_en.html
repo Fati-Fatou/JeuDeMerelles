@@ -7,10 +7,7 @@
       <span>The Goal</span>
     </h1>
     <div class="statement-goal-content">
-      The aim of this game is to win.
-      <br>
-      <br>
-      For this question, you will be asked to output a single line as a solution.
+      Remove from the board the pieces of your opponent, by making mills (aligned pieces). 
     </div>
   </div>
   <!-- RULES -->
@@ -20,47 +17,67 @@
       <span>Rules</span>
     </h1>
     <div>
-      <div class="statement-rules-content">Your program receives characters.<br>
-        Your actions have an effect.<br>
+      <div class="statement-rules-content">
+        Two players compete on a board, on which 24 slots are drawn. Some slots are connected
+        and are said to be <strong>adjacent</strong> slots.<br> The connected slots from
+        three squares of 8 slots.<br>
+        A straight line of 3 adjacent slots is a <strong>mill</strong>.<br>
+        There are 16 mills: the 12 edges of the squares, and 4 horizontal or vertical lines
+        connecting the centers of the edges.<br>        
+        The players play alternatively. BLACK plays first, then WHITE.
+        Each player has a stock of 9 pieces.
         <br>
-        The game zone works as follows:
+        The game has three phases.<br>
         <ul>
-          <li>There are coordinates.</li>
+        <li>
+        <strong>Placement</strong>
+        As long as you have pieces to put on the board (MY_STOCK is not zero),
+        you must PUT a piece from your stock onto an empty slot on the board.
+        </li>
+        <li>
+        <strong>Movement</strong>
+        When you have no more pieces to put on the board (MY_STOCK is zero),
+        you must MOVE one of your pieces to an adjacent, empty slot.<br>
+        </li>
+        <li>
+        <strong>Jumping</strong>
+        When you have only three pieces left (MY_STOCK is zero and MY_PIECES is three),
+        you must MOVE one of your pieces to any empty slot, regardless of adjacency.
+        In other words, you may jump.
+        </li>
+        </ul>
+        In any phase, when your move (or put) results in a mill newly filled with your pieces,
+        you must remove from the board a piece of your opponent, that is not itself part of a filled mill.<br>
+        A mill is <strong>not new</strong> when you have already filled it with the same pieces (),
+        in any order.
+        <br>
+        During the placement phase, it is possible to fill two mills in one turn. In such a case,
+        you must remove two pieces of your opponent.
+        <br>
+        The game is over when any of the following conditions occurs:
+        <ul>
+          <li>Each player has played 200 turns.</li>
+          <li>Some player looses.</li>
         </ul>
         <br>
-        The units work as follows:
-        <ul>
-          <li>They move around.</li>
-        </ul>
         You <strong>lose</strong> if:
         <ul>
-          <li>You mess up.</li>
-          <li>You do not supply a valid sequence of actions.</li>
+          <li>
+            You have only two pieces left (MY_PIECES is two, and MY_STOCK is zero).
+          </li>
+          <li>
+            Your program times out.
+          </li>
+          <li>
+            Your program provides invalid output for the active phase.
+          </li>
+          <li>
+            When the game is over, you have less pieces on the board than your opponent.
+          </li>
         </ul>
+        A tie is possible, should the game end when both players have the same number of pieces on the board.
       </div>
     </div>
-  </div>
-  <!-- EXPERT RULES -->
-  <div class="statement-section statement-expertrules">
-    <h1>
-      <span class="icon icon-expertrules">&nbsp;</span>
-      <span>Expert Rules</span>
-    </h1>
-    <div class="statement-expert-rules-content">
-      If you're going to run local simulations, you'll need to know this!
-    </div>
-  </div>
-  <!-- EXAMPLES -->
-  <div class="statement-section statement-examples">
-    <h1>
-      <span class="icon icon-example">&nbsp;</span>
-      <span>Example</span>
-    </h1>
-
-    <div class="statement-examples-text">
-      A basic situation, an instruction, a result.
-    </div>
-
   </div>
   <!-- WARNING -->
   <div class="statement-section statement-warning">
@@ -69,15 +86,11 @@
       <span>Note</span>
     </h1>
     <div class="statement-warning-content">
-      <b>Don’t forget to run the tests by launching them from the “Test cases” window</b>. You can submit at any time
-      to recieve a score against the training validators. <b>You can submit as many times as you like</b>. Your most
+      <b>Don&apos;t forget to run the tests by launching them from the Test cases</b>. You can submit at any time
+      to receive a score against the training validators. <b>You can submit as many times as you like</b>. Your most
       recent submission will be used for the final ranking.<br>
       <br>
-      <strong>Warning:</strong> the validation tests used to compute the final score are not the same as the ones used
-      during the event.
-      Harcoded solutions will not score highly.<br>
-      <br>
-      Don't hesitate to change the viewer's options to help debug your code (<img style="opacity:.8;background:#20252a;"
+      Don&apos;t hesitate to change the viewer&apos;s options to help debug your code (<img style="opacity:.8;background:#20252a;"
         height="18" src="https://www.codingame.com/servlet/fileservlet?id=3463235186409" width="18">).
     </div>
   </div>
@@ -87,45 +100,122 @@
       <span class="icon icon-protocol">&nbsp;</span>
       <span>Game Input</span>
     </h1>
-    <!-- Protocol block -->
-    <div class="blk">
-      <div class="text">The program must first read the initialization data from standard input. Then, provide to the
-        standard output one line with ...</div>
+
+    <div class="title">Coordinates:</div>
+    <div class="text">A slot on the board is identified with a <var>DIRECTION</var> and a <var>RADIUS</var>.<br>
+    The DIRECTION identifies a direction from the center of the board: 0 for top left, 1 for top, 2 for top right, and son on.<br>
+    The RADIUS identifies the square: 0 for innermost square, 1 for middle square, 2 for outermost square.<br>
     </div>
 
     <!-- Protocol block -->
     <div class="blk">
-      <div class="title">Input</div>
+	  <div class="title">Input for one game turn:</div>
       <div class="text">
-        <p><span class="statement-lineno">Line 1: </span>one string <var>...</var>, the ...</p>
-      </div>
+      <span class="statement-lineno">First line</span>: <var>MY_COLOR</var> <var>TURNS_LEFT</var> <var>MY_PIECES</var> <var>OPPONENTS_PIECES</var> <var>MY_STOCK</var> <var>OPPONENTS_STOCK</var><br>
+      <ul style="margin-top: 0;padding-bottom: 0;">
+      	<li>
+      		<var>MY_COLOR</var>: either <const>BLACK</const> (first player) or <const>WHITE</const> (second player).
+      	</li>
+      	<li>
+      		Integer <var>TURNS_LEFT</var>: the number of turns before game over (starts at 200).
+      	</li>
+      	<li>
+      		Integer <var>MY_PIECES</var>: the number of your pieces on the board, which is also your score.
+      	</li>
+      	<li>
+      		Integer <var>OPPONENTS_PIECES</var>: the number of your opponent&apos;s pieces on the board (his/her score).
+      	</li>
+      	<li>
+      		Integer <var>MY_STOCK</var>: the number of pieces you still have to put on the board (0 after the placement phase).
+      	</li>
+      	<li>
+      		Integer <var>OPPONENTS_STOCK</var>: the number of pieces your opponent still has to put on the board.
+      	</li>
+      </ul>
+        
+      <span class="statement-lineno">Next line</span>: Integer <var>NUM_PIECES</var>: the total number of pieces on the board. At least <const>6</const>.<br>
+
+      <span class="statement-lineno">Next <var>NUM_PIECES</var> lines</span>: <var>PIECE_ID</var> <var>OWNER_ID</var> <var>DIRECTION</var> <var>RADIUS</var><br>
+      <ul style="margin-top: 0;padding-bottom: 0;">
+      	<li>
+      		Integer <var>PIECE_ID</var>: a unique identifier for the piece, in the range <const>1</const> to <const>18</const>.
+      	</li>
+      	<li>
+      		Integer <var>OWNER_ID</var>: <const>0</const> for one of your pieces, <const>1</const> for one of your opponent&quote;s pieces.
+      	</li>
+      	<li>
+      		Integers <var>DIRECTION</var> and <var>RADIUS</var>: the coordinates of the piece on the board.
+      	</li>
+	  </ul>
+
+      <span class="statement-lineno">Next line</span>: Integer <var>NUM_OPTIONS</var>: the total number of suggested moves. At least <const>1</const>.<br>
+      <span class="statement-lineno">Next <var>NUM_OPTIONS</var> lines</span>: a line that would be a valid output for this turn.<br>
+      All valid outputs are given, except when <var>NUM_PIECES</var> is <const>3</const>. In the latter case, jumps are allowed.
+      This could result in a high number of possible moves. To spare bandwidth, only moves to adjacent slots are given.
+      But, if no such moves exist, then all jumps are provided. It is safe to write a program that just picks up some provided option,
+      but, for better results, your program should predict the jumps by itself.
+	  </div>  
     </div>
 
     <!-- Protocol block -->
     <div class="blk">
       <div class="title">Output</div>
       <div class="text">
-        <span class="statement-lineno">A single line</span> containing ...
+        <span class="statement-lineno">A single line</span> containing A PUT or a MOVE, depending on the current phase.
         <br>
+      </div>
+
+      <div class="title">Piece removal:</div>
+      <div class="text">Output commands end with two numbers, specifying which opponent&apos;s pieces should be removed in case of mills.<br>
+      If there is one newly filled mill, the piece with ID <var>REMOVE_PIECE_ID_1</var> is removed, if this is possible.<br>
+      It is possible if both the ID identifies one of your opponent&apos;s pieces on the board, and this piece is not part of a filled mill
+      (or all the pieces of your opponent belongs to filled mills).<br>
+      If the removal of this piece is not possible, then some other piece of your opponent is automatically removed.<br>
+      If there is a second filled mill in the same turn, <var>REMOVE_PIECE_ID_2</var> is removed, if this is possible. Else, another piece is automatically removed.<br>
+      You may want to use 0 for one or both of theses parameters, to say: &apos;I am not interested. Do what you want!&apos;
+      </div>
+
+      <div class="title">Input for the placement phase (when MY_STOCK is not zero):</div>
+      <div class="text">
+        <p><action>PUT</action> <var>DIRECTION</var> <var>RADIUS</var> <var>REMOVE_PIECE_ID_1</var> <var>REMOVE_PIECE_ID_2</var></p>
+        <p>Put a new piece at the specified direction and radius. If some mills are filled, remove the given pieces (if possible).</p>
+        <p>Example: PUT 6 2 12 0<br>
+        Put a piece at on the bottom left (direction is 6) outter (radius is 2) slot.<br>
+        If one mill is filled, remove piece with ID 12 if it is possible. If not remove any piece of the opponent.<br>
+        If a second mill is filled, remove any piece of the opponent (0 means &apos;not specified&apos;). 
+        </p>
+      </div>
+
+      <div class="title">Input for the movement and jump phases (when MY_STOCK is zero):</div>
+      <div class="text">
+        <p><action>MOVE</action> <var>PIECE_ID</var> </var><var>DIRECTION</var> <var>RADIUS</var> <var>REMOVE_PIECE_ID_1</var> <var>REMOVE_PIECE_ID_2</var></p>
+        <p>Move piece PIECE_ID at the specified direction and radius. If some mills are filled, remove the given pieces (if possible).</p>
+        <p>Example: MOVE 4 6 2 12 0<br>
+        Move piece 4 to the bottom left (direction is 6) outter (radius is 2) slot.<br>
+        If one mill is filled, remove piece with ID 12 if it is possible. If not remove any piece of the opponent.<br>
+        If a second mill is filled, remove any piece of the opponent (0 means &apos;not specified&apos;). 
+        </p>
       </div>
     </div>
 
     <!-- Protocol block -->
     <div class="blk">
       <div class="title">Constraints</div>
-      <div class="text"><var>...</var> contains between 1 and 500 characters.<br>
-        <br>Allotted response time to output
-        is ≤ <const>2</const> seconds.</div>
+      <div class="text">
+        Response time for the first turn: lower than <const>1</const>s<br>
+        Response time per turn: lower than <const>50</const>ms<br>
+      </div>
     </div>
   </div>
   <!-- STORY -->
   <div class="statement-story-background">
     <div class="statement-story-cover" style="background-size: cover; background-image: url(https://www.codingame.com/servlet/fileservlet?id=2210505809934)">
       <div class="statement-story" style="min-height: 300px; position: relative">
-        <h1>Title</h1>
-        <div class="story-text">Story
-          <br>
-          Totally optional</div>
+        <h1>Background</h1>
+        <div class="story-text">This game used to be popular in the Middle Ages in Europe.
+        It has several names: Mills, Nine men&apos;s morris, marelles...
+        See <a href= https://en.wikipedia.org/wiki/Nine_men%27s_morris>a description on Wikipedia</a>.
+		</div>
       </div>
     </div>
   </div>
