@@ -11,6 +11,7 @@ import com.proxiad.merelles.game.Board;
 import com.proxiad.merelles.game.CommandFormatter;
 import com.proxiad.merelles.game.Location;
 import com.proxiad.merelles.game.MoveCommand;
+import com.proxiad.merelles.game.NoPossibleMovesException;
 import com.proxiad.merelles.game.Phase;
 import com.proxiad.merelles.game.Piece;
 import com.proxiad.merelles.game.PlayerColor;
@@ -18,7 +19,7 @@ import com.proxiad.merelles.game.PutCommand;
 
 public class InfoGenerator implements CommandFormatter {
 
-	public Stream<String> gameInfoForPlayer(Board board, Player player, int turnsLeft) {
+	public Stream<String> gameInfoForPlayer(Board board, Player player, int turnsLeft) throws NoPossibleMovesException {
 		List<String> infos = new ArrayList<>(30);
 
 		// General info
@@ -36,6 +37,10 @@ public class InfoGenerator implements CommandFormatter {
 		// Suggested moves	
 		Phase phase = player.getData().getPhase();
 		List<String> movesInfo = phase.suggest(board, this).collect(Collectors.toList());
+		
+		if (movesInfo.isEmpty()) {
+			throw new NoPossibleMovesException();
+		}
 		
 		infos.add(Integer.toString(movesInfo.size()));
 		infos.addAll(movesInfo);

@@ -13,6 +13,7 @@ import org.junit.Test;
 import com.codingame.game.Player;
 import com.proxiad.merelles.game.Board;
 import com.proxiad.merelles.game.Location;
+import com.proxiad.merelles.game.NoPossibleMovesException;
 import com.proxiad.merelles.game.PlayerColor;
 import com.proxiad.merelles.game.PlayerData;
 
@@ -47,7 +48,7 @@ public class InfoGeneratorTests {
 	}
 
 	@Test
-	public void testEmptyBoardInfo() {
+	public void testEmptyBoardInfo() throws NoPossibleMovesException {
 		List<String> blackInfos = generator.gameInfoForPlayer(board, whitePlayer, 200).collect(Collectors.toList());
 
 		// Info line,
@@ -77,7 +78,7 @@ public class InfoGeneratorTests {
 	}
 	
 	@Test
-	public void testFirstWhiteInfo() {
+	public void testFirstWhiteInfo() throws NoPossibleMovesException {
 		// black player plays
 		board.putPiece(new Location(2, 1), PlayerColor.BLACK);
 		whitePlayer.getData().getOpponent().updateCountsAfterPut();
@@ -106,5 +107,28 @@ public class InfoGeneratorTests {
 				}
 			}
 		}
+	}
+	
+	@Test (expected = NoPossibleMovesException.class)
+	public void testStuckThrowsException() throws NoPossibleMovesException {
+		board.putPiece(new Location(2, 0), PlayerColor.WHITE);
+		board.putPiece(new Location(2, 1), PlayerColor.WHITE);
+		board.putPiece(new Location(2, 2), PlayerColor.WHITE);
+		board.putPiece(new Location(3, 1), PlayerColor.WHITE);
+
+		board.putPiece(new Location(1, 0), PlayerColor.BLACK);
+		board.putPiece(new Location(1, 1), PlayerColor.BLACK);
+		board.putPiece(new Location(1, 2), PlayerColor.BLACK);
+
+		board.putPiece(new Location(3, 0), PlayerColor.BLACK);
+		board.putPiece(new Location(4, 1), PlayerColor.BLACK);
+		board.putPiece(new Location(3, 2), PlayerColor.BLACK);
+
+		// simulates end of placement phase
+		for (int i = 0; i < 9; ++i) {
+			whitePlayer.getData().updateCountsAfterPut();
+		}
+		
+		generator.gameInfoForPlayer(board, whitePlayer, 200).collect(Collectors.toList());
 	}
 }

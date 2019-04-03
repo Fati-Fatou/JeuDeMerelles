@@ -4,6 +4,7 @@ import java.util.List;
 import com.codingame.gameengine.core.AbstractMultiplayerPlayer;
 import com.proxiad.merelles.game.Board;
 import com.proxiad.merelles.game.InvalidCommandException;
+import com.proxiad.merelles.game.NoPossibleMovesException;
 import com.proxiad.merelles.game.Phase;
 import com.proxiad.merelles.game.PlayerColor;
 import com.proxiad.merelles.game.PlayerData;
@@ -40,8 +41,18 @@ public class Player extends AbstractMultiplayerPlayer {
      * @param board Situation on the board before the player's turn begins
      */
 	public void play(int turnsLeft, Board board) {
+		
+		if (!isActive()) {
+			return;
+		}
+		
 		InfoGenerator generator = new InfoGenerator();
-		generator.gameInfoForPlayer(board, this, turnsLeft).forEach(this::sendInputLine);
+		try {
+			generator.gameInfoForPlayer(board, this, turnsLeft).forEach(this::sendInputLine);
+		} catch (NoPossibleMovesException e1) {
+			deactivate(prependNickname("stuck!"));
+			return;
+		}
 		
 		execute();
 
