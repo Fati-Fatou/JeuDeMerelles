@@ -72,6 +72,31 @@ public class RemovePieceTests {
 	}
 
 	@Test
+	public void testRemoveFromAMillIfNothingElseIsPossible() {
+		int id1 = board.putPiece(new Location(7,2), OPPONENTS_COLOR);
+		int id2 = board.putPiece(new Location(7,1), OPPONENTS_COLOR);
+		int id3 = board.putPiece(new Location(7,0), OPPONENTS_COLOR);
+
+		List<Integer> removePiecesIds = board.selectRemovablePieces(3, removePieces, OPPONENTS_COLOR);
+		assertEquals(3, removePiecesIds.size());
+		assertTrue(removePiecesIds.contains(id1));
+		assertTrue(removePiecesIds.contains(id2));
+		assertTrue(removePiecesIds.contains(id3));
+	}
+
+	@Test
+	public void testRemoveFromAMillIsNormallyNotPossible() {
+		board.putPiece(new Location(7,2), OPPONENTS_COLOR);
+		board.putPiece(new Location(7,1), OPPONENTS_COLOR);
+		board.putPiece(new Location(7,0), OPPONENTS_COLOR);
+		int id4 = board.putPiece(new Location(6,0), OPPONENTS_COLOR);
+
+		List<Integer> removePiecesIds = board.selectRemovablePieces(3, removePieces, OPPONENTS_COLOR);
+		assertEquals(1, removePiecesIds.size());
+		assertTrue(removePiecesIds.contains(id4));
+	}
+
+	@Test
 	public void testValidHintWillBeRemoved() {
 		int id = board.putPiece(new Location(7,2), OPPONENTS_COLOR);
 		Piece candidate = board.findPieceById(id);
@@ -107,7 +132,7 @@ public class RemovePieceTests {
 		assertEquals(1, removePiecesIds.size());
 		assertEquals(Integer.valueOf(id), removePiecesIds.get(0));
 	}
-	
+
 	@Test
 	public void testTwoPiecesRemoved() {
 		int notAHintGoodId = board.putPiece(new Location(7,1), OPPONENTS_COLOR);

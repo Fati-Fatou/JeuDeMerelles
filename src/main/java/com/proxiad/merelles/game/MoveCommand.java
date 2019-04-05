@@ -6,7 +6,7 @@ public class MoveCommand extends Command {
 
 	// The piece to be moved
 	private Piece piece;
-
+	
 	public MoveCommand(Piece piece, Location targetLocation) {
 		this(piece, targetLocation, null, null);
 	}
@@ -36,10 +36,21 @@ public class MoveCommand extends Command {
 		if (movedPiece == null 
 				|| !movedPiece.getColor().equals(player.getColor())
 				|| !board.isLocationFree(target)
-				|| !target.isAdjacent(movedPiece.getLocation())) {
+				|| isInvalidJump()) {
 			throw new InvalidCommandException();
 		}
 		
 		board.movePiece(movedPiece, target);
+	}
+
+	protected boolean isInvalidJump() {
+		return isJump();
+	}
+	
+	protected boolean isJump() {
+		Piece movedPiece = getMovedPiece();
+		Location target = getTargetLocation();
+
+		return !target.isAdjacent(movedPiece.getLocation());
 	}
 }

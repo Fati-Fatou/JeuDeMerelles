@@ -46,8 +46,16 @@ public class PlayerData {
 		--piecesOnBoard;
 	}
 
-	public Phase getPhase() {	
-		return getPiecesInStock() > 0 ? new PlacementPhase() : new MovementPhase(this);
+	public Phase getPhase() {
+		if (getPiecesInStock() > 0) {
+			return new PlacementPhase();
+		}
+		
+		if (getPiecesOnBoard() <= 3) {
+			return new JumpPhase(this);
+		}
+		
+		return new MovementPhase(this);
 	}
 
 	public List<Piece> pieces() {
