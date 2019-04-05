@@ -1,4 +1,5 @@
 package com.codingame.game;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.codingame.gameengine.core.AbstractMultiplayerPlayer;
@@ -15,7 +16,12 @@ import com.proxiad.merelles.protocol.ParsingException;
 // public class Player extends AbstractSoloPlayer {
 public class Player extends AbstractMultiplayerPlayer {
 	
+	public interface PlayerObserver {
+		public void disqualified(Player player);
+	}
+	
 	private PlayerData data;
+	private List<PlayerObserver> observers = new ArrayList<>();
 	
     @Override
     public int getExpectedOutputLines() {
@@ -50,7 +56,7 @@ public class Player extends AbstractMultiplayerPlayer {
 		try {
 			generator.gameInfoForPlayer(board, this, turnsLeft).forEach(this::sendInputLine);
 		} catch (NoPossibleMovesException e1) {
-			deactivate(prependNickname("stuck!"));
+			disqualify("stuck!");
 			return;
 		}
 		
@@ -64,15 +70,24 @@ public class Player extends AbstractMultiplayerPlayer {
 			phase.parseAndRunCommand(outputs.get(0), board, getData());
 
 		} catch (TimeoutException e) {
-			deactivate(prependNickname("timeout!"));
+			disqualify("timeout!");
 		} catch (ParsingException e) {
-			deactivate(prependNickname("unrecognized command!"));
+			disqualify("unrecognized command!");
 			e.printStackTrace();
 		} catch (InvalidCommandException e) {
-			deactivate(prependNickname(e.getMessage()));
+			disqualify(e.getMessage());
 		} catch (Exception e) {
-			deactivate(prependNickname(e.getMessage()));
+			disqualify(e.getMessage());
 			e.printStackTrace();
+		}
+	}
+
+	public void disqualify(String reason) {
+		deactivate(prependNickname(reason));
+		setScore(-1);
+		
+		for (PlayerObserver observer : observers) {
+			observer.disqualified(this);
 		}
 	}
 	
@@ -82,5 +97,11 @@ public class Player extends AbstractMultiplayerPlayer {
 		builder.append(' ');
 		builder.append(message);
 		return builder.toString();
+	}
+	
+	public void addListener(PlayerObserver observer) {
+		if (observer != null) {
+			observers.add(observer);
+		}
 	}
 }

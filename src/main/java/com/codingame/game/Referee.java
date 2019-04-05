@@ -1,4 +1,5 @@
 package com.codingame.game;
+import com.codingame.game.Player.PlayerObserver;
 import com.codingame.gameengine.core.AbstractReferee;
 import com.codingame.gameengine.core.MultiplayerGameManager;
 import com.codingame.gameengine.module.entities.GraphicEntityModule;
@@ -10,7 +11,7 @@ import com.proxiad.merelles.game.Scores;
 import com.proxiad.merelles.view.PlayerView;
 import com.proxiad.merelles.view.ViewController;
 
-public class Referee extends AbstractReferee {
+public class Referee extends AbstractReferee implements PlayerObserver {
 
 	public static final int NUMBER_OF_TURNS_PER_PLAYER = 200;
 
@@ -45,6 +46,8 @@ public class Referee extends AbstractReferee {
 	
 	@Override
 	public void init() {
+		gameManager.setMaxTurns(2 * NUMBER_OF_TURNS_PER_PLAYER);
+		
 		// Initialize your game here.
 		board = new Board();
 
@@ -58,6 +61,10 @@ public class Referee extends AbstractReferee {
 
 		boolean firstPlayer = true;
 		for (Player player : gameManager.getActivePlayers()) {
+			
+			player.addListener(this);
+			player.setScore(0);
+			
 			if (firstPlayer) {
 				player.setData(blackPlayer);
 				blackPlayerView = new PlayerView(graphicEntityModule, player);
@@ -84,7 +91,9 @@ public class Referee extends AbstractReferee {
 		Scores scores = computeScores(turn, player.getData());
 
 		for (Player scoredPlayer : gameManager.getPlayers()) {
-			scoredPlayer.setScore(scores.scoreForPlayer(scoredPlayer.getData().getColor()));
+			if (scoredPlayer.isActive()) {
+				scoredPlayer.setScore(scores.scoreForPlayer(scoredPlayer.getData().getColor()));
+			}
 		}
 
 		if (scores.gameOver()) {
@@ -100,5 +109,10 @@ public class Referee extends AbstractReferee {
 				player.getPiecesInStock() == 0 && player.getPiecesOnBoard() <= 2 || 
 				player.getOpponent().getPiecesInStock() == 0 && player.getPiecesOnBoard() <= 2;
 		return new Scores(player.getColor(), player.score(), player.getOpponent().score(), isGameOver);
+	}
+
+	@Override
+	public void disqualified(Player player) {
+		gameManager.endGame();		
 	}
 }
