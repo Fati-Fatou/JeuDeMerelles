@@ -6,14 +6,28 @@ import com.proxiad.merelles.game.PlayerColor;
 
 public class SpriteManager {
 
+	public static final int PIECE_SIZE = 48;
+	
 	private GraphicEntityModule entityModule;
 
 	public SpriteManager(GraphicEntityModule entityModule) {
 		this.entityModule = entityModule;
+		createLogo();
 	}
 
+	// Uses for the demo.
+	public void createLogo() {
+		entityModule.createSprite()
+		.setBaseWidth(1920)
+		.setBaseHeight(1080)
+		.setX(0)
+		.setY(0)
+		.setImage("logo.png")
+		.setVisible(false);
+	}
+	
 	public void createBackground() {
-		entityModule.createRectangle()
+		/*entityModule.createRectangle()
 		.setFillColor(0xFFFFCC)
 		.setWidth(1920)
 		.setHeight(1080)
@@ -29,14 +43,23 @@ public class SpriteManager {
 		.setY(0)
 		.setScale(1)
 		.setAnchor(0)
+		.setZIndex(-1);*/
+		entityModule.createSprite()
+		.setImage("background.png")
+		.setBaseWidth(1920)
+		.setBaseHeight(1080)
+		.setX(0)
+		.setY(0)
+		.setScale(1)
+		.setAnchor(0)
 		.setZIndex(-1);
 	}
 
 	public EntitySprite createPieceSprite(PlayerColor color) {
 		Sprite sprite = entityModule.createSprite()
 				.setImage(color == PlayerColor.BLACK ? "black.png" : "white.png")
-				.setBaseWidth(48)
-				.setBaseHeight(48)
+				.setBaseWidth(PIECE_SIZE)
+				.setBaseHeight(PIECE_SIZE)
 				.setAnchor(0.5)
 				.setZIndex(0);
 		EntitySprite entity = new EntitySprite(entityModule, sprite);

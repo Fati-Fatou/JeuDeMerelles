@@ -57,7 +57,7 @@ public class PieceView implements PieceObserver {
 	private boolean wasTaken = false;
 	private Piece piece;
 
-	public PieceView(Piece piece,EntitySprite sprite) {
+	public PieceView(Piece piece, EntitySprite sprite) {
 		this.sprite = sprite;
 		this.piece = piece;
 		this.piece.addListener(this);
