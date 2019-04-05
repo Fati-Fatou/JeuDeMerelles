@@ -23,6 +23,11 @@ public class ParserMoveCommand extends Parser<MoveCommand> {
 			throw new ParsingException(formatUnknownPiece(pieceId));
 		}
 		
+		return makeCommand(message, targetLocation, removePieces, piece);
+	}
+
+	protected MoveCommand makeCommand(String message, Location targetLocation,
+			Collection<Piece> removePieces, Piece piece) {
 		return new MoveCommand(piece, targetLocation, removePieces, message);
 	}
 }

@@ -26,9 +26,9 @@ public class MovementPhase extends Phase {
 				.map(formatter::formatMove);
 	}
 
-	private List<MoveCommand> suggestedMoves(Board board) {
+	protected List<MoveCommand> suggestedMoves(Board board) {
 		return board.pieces()
-				.filter(piece -> piece.getColor() == player.getColor())
+				.filter(this::isPieceMine)
 				.flatMap(piece ->
 				piece
 				.getLocation()
@@ -37,5 +37,9 @@ public class MovementPhase extends Phase {
 				.filter(location -> board.isLocationFree(location))
 				.map(location -> new MoveCommand(piece, location)))
 				.collect(Collectors.toList());
+	}
+	
+	protected boolean isPieceMine(Piece piece) {
+		return piece.getColor() == player.getColor();
 	}
 }

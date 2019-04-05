@@ -11,6 +11,7 @@ import com.proxiad.merelles.game.Board;
 import com.proxiad.merelles.game.CommandFormatter;
 import com.proxiad.merelles.game.Location;
 import com.proxiad.merelles.game.MoveCommand;
+import com.proxiad.merelles.game.NoPossibleMovesException;
 import com.proxiad.merelles.game.Phase;
 import com.proxiad.merelles.game.Piece;
 import com.proxiad.merelles.game.PlayerColor;
@@ -18,11 +19,11 @@ import com.proxiad.merelles.game.PutCommand;
 
 public class InfoGenerator implements CommandFormatter {
 
-	public Stream<String> gameInfoForPlayer(Board board, Player player) {
-		List<String> infos = new ArrayList<String>(30);
+	public Stream<String> gameInfoForPlayer(Board board, Player player, int turnsLeft) throws NoPossibleMovesException {
+		List<String> infos = new ArrayList<>(30);
 
 		// General info
-		infos.add(infoLine(board, player));
+		infos.add(infoLine(board, player, turnsLeft));
 		
 		// Pieces on the board
 		List<String> piecesInfos =
@@ -37,13 +38,17 @@ public class InfoGenerator implements CommandFormatter {
 		Phase phase = player.getData().getPhase();
 		List<String> movesInfo = phase.suggest(board, this).collect(Collectors.toList());
 		
+		if (movesInfo.isEmpty()) {
+			throw new NoPossibleMovesException();
+		}
+		
 		infos.add(Integer.toString(movesInfo.size()));
 		infos.addAll(movesInfo);
 		
 		return infos.stream();
 	}
 	
-	public String infoLine(Board board, Player player) {
+	public String infoLine(Board board, Player player, int turnsLeft) {
 		int myPieces = player.getData().getPiecesOnBoard();
 		int opponentsPieces = player.getData().getOpponent().getPiecesOnBoard();
 		int myStock = player.getData().getPiecesInStock();
@@ -51,7 +56,7 @@ public class InfoGenerator implements CommandFormatter {
 		
 		return String.format("%s %d %d %d %d %d",
 					player.getData().getColor() == PlayerColor.BLACK ? "BLACK" : "WHITE",
-					board.getTurnsLeft(),
+					turnsLeft,
 					myPieces, opponentsPieces, myStock, opponentsStock);
 	}
 	

@@ -13,6 +13,7 @@ import org.junit.Test;
 import com.codingame.game.Player;
 import com.proxiad.merelles.game.Board;
 import com.proxiad.merelles.game.Location;
+import com.proxiad.merelles.game.NoPossibleMovesException;
 import com.proxiad.merelles.game.PlayerColor;
 import com.proxiad.merelles.game.PlayerData;
 
@@ -37,20 +38,18 @@ public class InfoGeneratorTests {
 	
 	private Board board;
 	private Player whitePlayer;
-	private Player blackPlayer;
 	private InfoGenerator generator;
 	
 	@Before
 	public void setUp() throws Exception {
 		board = new Board();
 		whitePlayer = new ControlledColorPlayer(PlayerColor.WHITE);
-		blackPlayer = new ControlledColorPlayer(PlayerColor.BLACK);
 		generator = new InfoGenerator();
 	}
 
 	@Test
-	public void testEmptyBoardInfo() {
-		List<String> blackInfos = generator.gameInfoForPlayer(board, whitePlayer).collect(Collectors.toList());
+	public void testEmptyBoardInfo() throws NoPossibleMovesException {
+		List<String> blackInfos = generator.gameInfoForPlayer(board, whitePlayer, 200).collect(Collectors.toList());
 
 		// Info line,
 		// nb pieces = 0 (empty board)
@@ -79,13 +78,13 @@ public class InfoGeneratorTests {
 	}
 	
 	@Test
-	public void testFirstWhiteInfo() {
+	public void testFirstWhiteInfo() throws NoPossibleMovesException {
 		// black player plays
 		board.putPiece(new Location(2, 1), PlayerColor.BLACK);
 		whitePlayer.getData().getOpponent().updateCountsAfterPut();
 		
 		// what does white player receive?
-		List<String> whiteInfos = generator.gameInfoForPlayer(board, whitePlayer).collect(Collectors.toList());
+		List<String> whiteInfos = generator.gameInfoForPlayer(board, whitePlayer, 108).collect(Collectors.toList());
 
 		// Info line,
 		// nb pieces = 1
@@ -94,7 +93,7 @@ public class InfoGeneratorTests {
 		// one line per slot
 		assertEquals(4 + 23, whiteInfos.size());
 
-		assertEquals("WHITE 200 0 1 9 8", whiteInfos.get(0));
+		assertEquals("WHITE 108 0 1 9 8", whiteInfos.get(0));
 		
 		// 1 piece on the board
 		assertEquals("1", whiteInfos.get(1));
@@ -108,5 +107,28 @@ public class InfoGeneratorTests {
 				}
 			}
 		}
+	}
+	
+	@Test (expected = NoPossibleMovesException.class)
+	public void testStuckThrowsException() throws NoPossibleMovesException {
+		board.putPiece(new Location(2, 0), PlayerColor.WHITE);
+		board.putPiece(new Location(2, 1), PlayerColor.WHITE);
+		board.putPiece(new Location(2, 2), PlayerColor.WHITE);
+		board.putPiece(new Location(3, 1), PlayerColor.WHITE);
+
+		board.putPiece(new Location(1, 0), PlayerColor.BLACK);
+		board.putPiece(new Location(1, 1), PlayerColor.BLACK);
+		board.putPiece(new Location(1, 2), PlayerColor.BLACK);
+
+		board.putPiece(new Location(3, 0), PlayerColor.BLACK);
+		board.putPiece(new Location(4, 1), PlayerColor.BLACK);
+		board.putPiece(new Location(3, 2), PlayerColor.BLACK);
+
+		// simulates end of placement phase
+		for (int i = 0; i < 9; ++i) {
+			whitePlayer.getData().updateCountsAfterPut();
+		}
+		
+		generator.gameInfoForPlayer(board, whitePlayer, 200).collect(Collectors.toList());
 	}
 }
